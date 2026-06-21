@@ -232,10 +232,65 @@ letter-spacing:2px;
 color:var(--red);
 }
 
-nav{
-
+{nav{
 display:flex;
 gap:35px;
+}
+
+.hamburger{
+display:none;
+flex-direction:column;
+gap:5px;
+cursor:pointer;
+}
+
+.hamburger span{
+display:block;
+width:25px;
+height:3px;
+background:white;
+border-radius:3px;
+transition:.3s;
+}
+
+.hamburger.open span:nth-child(1){
+transform:rotate(45deg) translate(5px,6px);
+}
+
+.hamburger.open span:nth-child(2){
+opacity:0;
+}
+
+.hamburger.open span:nth-child(3){
+transform:rotate(-45deg) translate(5px,-6px);
+}
+
+@media(max-width:768px){
+
+nav{
+display:none;
+flex-direction:column;
+position:fixed;
+top:70px;
+left:0;
+width:100%;
+background:rgba(5,5,5,0.97);
+padding:30px;
+gap:25px;
+}
+
+nav.open{
+display:flex;
+}
+
+.hamburger{
+display:flex;
+}
+
+}
+
+
+
 
 }
 
