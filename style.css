@@ -232,7 +232,7 @@ letter-spacing:2px;
 color:var(--red);
 }
 
-{nav{
+nav{
 display:flex;
 gap:35px;
 }
