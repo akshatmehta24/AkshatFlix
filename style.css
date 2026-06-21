@@ -94,8 +94,9 @@ logoReveal 2s ease forwards;
 
 }
 .logo-akshat{
-font-weight:300;
+font-weight:900;
 color:white;
+font-style:normal;
 }
 
 .logo-flix{
@@ -105,6 +106,7 @@ text-shadow:
 0 0 20px rgba(229,9,20,0.8),
 0 0 40px rgba(229,9,20,0.4);
 }
+
 
 
 @keyframes logoReveal{
