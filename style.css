@@ -94,10 +94,11 @@ logoReveal 2s ease forwards;
 
 }
 .logo-akshat{
-font-weight:900;
+font-weight:300;
 color:white;
-font-style:normal;
+letter-spacing:2px;
 }
+
 
 .logo-flix{
 font-weight:900;
