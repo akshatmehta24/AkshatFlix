@@ -294,6 +294,12 @@ nav.open{
 display:flex;
 }
 
+nav.open a{
+color:white;
+text-decoration:none;
+}
+
+  
 .hamburger{
 display:flex;
 }
