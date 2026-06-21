@@ -882,19 +882,17 @@ color:var(--text-secondary);
 
 }
 
-.footer-logo{
-
-font-size:2rem;
-font-weight:900;
-
-margin-bottom:15px;
-
+.footer-logo .logo-akshat{
+font-weight:300;
+color:white;
 }
 
-.footer-logo span{
-
+.footer-logo .logo-flix{
+font-weight:900;
 color:var(--red);
-
+text-shadow:
+0 0 20px rgba(229,9,20,0.8),
+0 0 40px rgba(229,9,20,0.4);
 }
 
 /* ========================= */
