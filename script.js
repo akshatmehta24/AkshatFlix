@@ -491,3 +491,26 @@ navMenu.querySelectorAll("a").forEach(link => {
     });
 
 });
+
+
+/* ========================= */
+/* SKILLS ANIMATION */
+/* ========================= */
+
+const skillFills = document.querySelectorAll(".skill-fill");
+
+const skillObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if(entry.isIntersecting){
+            skillFills.forEach(fill => {
+                fill.style.width = fill.getAttribute("data-width") + "%";
+            });
+        }
+    });
+}, {threshold: 0.3});
+
+const skillsSection = document.querySelector(".skills-section");
+if(skillsSection){
+    skillObserver.observe(skillsSection);
+}
+
