@@ -449,7 +449,7 @@ position: relative;
   overflow: hidden;
   position: relative;
   cursor: pointer;
-  transition: .45s;
+  transition: transform 0.15s ease;
   background: #111;
   transform-style: preserve-3d;
 transition: transform 0.15s ease;
