@@ -902,7 +902,19 @@ footer {
   .episode-card         { padding: 20px; }
   .episode-card:hover   { transform: translateX(4px); }
 
+  .ai-stack {
+  padding: 60px 20px;
 }
+
+.stack-grid {
+  gap: 8px;
+}
+
+.stack-grid span {
+  padding: 8px 12px;
+  font-size: .8rem;
+}
+
 
 /* ============================================================ */
 /* SCROLL-DRIVEN ANIMATION ADDITIONS                            */
