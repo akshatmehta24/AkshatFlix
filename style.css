@@ -914,7 +914,37 @@ footer {
   padding: 8px 12px;
   font-size: .8rem;
 }
+.stack-grid span {
+  padding: 8px 12px;
+  font-size: .8rem;
+}
 
+.hero h1 {
+  font-size: 2.2rem;
+  white-space: normal;
+}
+
+.hero h2 {
+  font-size: 1.1rem;
+}
+
+.hero p {
+  font-size: 0.95rem;
+}
+
+.hero-buttons {
+  justify-content: center;
+}
+
+.hero-buttons a {
+  width: 100%;
+  max-width: 280px;
+  text-align: center;
+}
+
+}
+
+/* SCROLL-DRIVEN ANIMATION ADDITIONS */
 
 /* ============================================================ */
 /* SCROLL-DRIVEN ANIMATION ADDITIONS                            */
