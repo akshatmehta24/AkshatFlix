@@ -1153,7 +1153,22 @@ border-radius:25px;
 
 text-align:center;
 
+display:flex;
+flex-direction:column;
+gap:16px;
+
 }
+
+.modal-content h3{
+font-size:1.2rem;
+font-weight:700;
+}
+
+.modal-content p{
+color:var(--text-secondary);
+font-size:0.9rem;
+}
+
 
 .close-modal{
 
