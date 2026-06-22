@@ -878,3 +878,68 @@ footer {
   .episode-card:hover   { transform: translateX(4px); }
 
 }
+
+/* ============================================================ */
+/* SCROLL-DRIVEN ANIMATION ADDITIONS                            */
+/* Append these rules to the bottom of your existing style.css  */
+/* ============================================================ */
+
+/* Remove old reveal class default so JS controls everything */
+.reveal {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/* Hero section — make sure overflow is hidden so
+   elements flying out don't cause horizontal scroll */
+.hero {
+  overflow: hidden;
+}
+
+/* Stat cards — need explicit transition reset so JS
+   can set it at the right moment */
+.stat {
+  transition: none;
+}
+
+/* Episode cards — smooth GPU hint */
+.episode-card {
+  backface-visibility: hidden;
+}
+
+/* Stack grid pills — set base transition-timing via JS,
+   but ensure display stays inline */
+.stack-grid span {
+  display: inline-block;
+}
+
+/* Reduced-motion: respect user accessibility preferences */
+@media (prefers-reduced-motion: reduce) {
+  .stat,
+  .episode-card,
+  .project-card,
+  .hero-content,
+  .hero-image img,
+  .section-header h2,
+  .stack-grid span,
+  .achievement-card,
+  .about p,
+  .contact-section h2,
+  .contact-buttons {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .hero-image img {
+    animation: none !important;
+  }
+}
+
+/* ── Optional: section transitions feel smoother on mobile ── */
+@media (max-width: 768px) {
+  .hero {
+    overflow: visible;
+  }
+}
