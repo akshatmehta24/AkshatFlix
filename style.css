@@ -633,6 +633,31 @@ nav a:hover { color: var(--red); }
 }
 
 /* ========================= */
+/* AI STACK */
+/* ========================= */
+
+.ai-stack {
+  padding: 100px 8%;
+}
+
+.stack-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 25px;
+}
+
+.stack-grid span {
+  display: inline-block;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  color: white;
+  font-size: .9rem;
+}
+
+/* ========================= */
 /* SKILLS */
 /* ========================= */
 
