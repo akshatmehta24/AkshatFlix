@@ -378,7 +378,13 @@ line-height:1.05;
 
 margin-bottom:15px;
 
+background: linear-gradient(90deg, #ffffff 0%, #E50914 60%, #ff3b45 100%);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+
 }
+
 
 .hero h2{
 
