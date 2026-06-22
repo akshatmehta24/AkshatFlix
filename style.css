@@ -1319,3 +1319,20 @@ width:0%;
 transition:width 1.2s ease;
 box-shadow:0 0 10px rgba(229,9,20,0.5);
 }
+
+/* ========================= */
+/* SCROLL PROGRESS BAR */
+/* ========================= */
+
+#progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 0%;
+  background: linear-gradient(90deg, var(--red), var(--red-light));
+  z-index: 999999;
+  transition: width 0.1s ease;
+  box-shadow: 0 0 10px rgba(229, 9, 20, 0.8),
+              0 0 20px rgba(229, 9, 20, 0.4);
+}
