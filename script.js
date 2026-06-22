@@ -514,3 +514,9 @@ if(skillsSection){
     skillObserver.observe(skillsSection);
 }
 
+// SCROLL PROGRESS BAR
+const progressBar = document.getElementById("progress-bar");
+window.addEventListener("scroll", () => {
+    const scrolled = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+    progressBar.style.width = scrolled + "%";
+});
