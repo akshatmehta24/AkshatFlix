@@ -18,13 +18,18 @@ const navbar = document.getElementById("navbar");
 
 window.addEventListener("scroll", () => {
     if (window.scrollY > 50) {
-        navbar.style.background = "rgba(5,5,5,0.85)";
-        navbar.style.backdropFilter = "blur(20px)";
-        navbar.style.boxShadow = "0 10px 30px rgba(0,0,0,.4)";
-    } else {
-        navbar.style.background = "transparent";
-        navbar.style.boxShadow = "none";
-    }
+    navbar.style.background = "rgba(5,5,5,0.55)";
+    navbar.style.backdropFilter = "blur(25px)";
+    navbar.style.webkitBackdropFilter = "blur(25px)";
+    navbar.style.borderBottom = "1px solid rgba(255,255,255,0.08)";
+    navbar.style.boxShadow = "0 8px 30px rgba(0,0,0,.25)";
+} else {
+    navbar.style.background = "transparent";
+    navbar.style.backdropFilter = "none";
+    navbar.style.webkitBackdropFilter = "none";
+    navbar.style.borderBottom = "none";
+    navbar.style.boxShadow = "none";
+}
 });
 
 /* ========================= */
