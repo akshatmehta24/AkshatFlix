@@ -152,6 +152,42 @@ z-index:-1;
 
 }
 
+/* ========================= */
+/* SCANLINES */
+/* ========================= */
+
+.scanlines{
+
+position:fixed;
+inset:0;
+
+z-index:9998;
+
+pointer-events:none;
+
+background:repeating-linear-gradient(
+    0deg,
+    rgba(0,0,0,0.03) 0px,
+    rgba(0,0,0,0.03) 1px,
+    transparent 1px,
+    transparent 3px
+);
+
+animation: noiseShift 8s steps(10) infinite;
+
+}
+
+@keyframes noiseShift{
+
+0%  { transform: translateY(0px);   opacity: 0.6; }
+25% { transform: translateY(-3px);  opacity: 0.5; }
+50% { transform: translateY(2px);   opacity: 0.7; }
+75% { transform: translateY(-1px);  opacity: 0.5; }
+100%{ transform: translateY(0px);   opacity: 0.6; }
+
+}
+
+
 .glow-1{
 
 width:350px;
