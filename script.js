@@ -1,449 +1,515 @@
-/* ============================================================ */
-/* AKSHATFLIX — Apple-Style Scroll Animation Engine             */
-/* ============================================================ */
-
 /* ========================= */
-/* INTRO SCREEN              */
+/* INTRO SCREEN */
 /* ========================= */
 
 window.addEventListener("load", () => {
-  const intro = document.getElementById("intro");
-  setTimeout(() => {
-    intro.classList.add("hidden");
+    const intro = document.getElementById("intro");
     setTimeout(() => {
-      intro.style.display = "none";
-      // Trigger hero entrance after intro
-      runHeroEntrance();
-    }, 900);
-  }, 2600);
+        intro.style.opacity = "0";
+        setTimeout(() => { intro.style.display = "none"; }, 800);
+    }, 2800);
 });
 
 /* ========================= */
-/* HERO ENTRANCE ANIMATION   */
-/* (runs once after intro)   */
-/* ========================= */
-
-function runHeroEntrance() {
-  const eyebrow = document.getElementById("heroEyebrow");
-  const name    = document.getElementById("heroName");
-  const role    = document.getElementById("heroRole");
-  const desc    = document.getElementById("heroDesc");
-  const btns    = document.getElementById("heroBtns");
-  const imgWrap = document.getElementById("heroImgWrap");
-  const cue     = document.getElementById("scrollCue");
-
-  const items = [eyebrow, name, role, desc, btns];
-  items.forEach((el, i) => {
-    if (!el) return;
-    el.style.opacity   = "0";
-    el.style.transform = "translateY(30px)";
-    el.style.filter    = "blur(8px)";
-    el.style.transition = `opacity 0.9s cubic-bezier(0.22,1,0.36,1) ${i*0.1}s,
-                           transform 0.9s cubic-bezier(0.22,1,0.36,1) ${i*0.1}s,
-                           filter 0.9s ease ${i*0.1}s`;
-    requestAnimationFrame(() => {
-      el.style.opacity   = "1";
-      el.style.transform = "translateY(0)";
-      el.style.filter    = "blur(0px)";
-    });
-  });
-
-  if (imgWrap) {
-    imgWrap.style.opacity   = "0";
-    imgWrap.style.transform = "translateX(60px) scale(0.92)";
-    imgWrap.style.filter    = "blur(12px)";
-    imgWrap.style.transition = "opacity 1.1s cubic-bezier(0.22,1,0.36,1) 0.3s, transform 1.1s cubic-bezier(0.22,1,0.36,1) 0.3s, filter 1s ease 0.3s";
-    requestAnimationFrame(() => {
-      imgWrap.style.opacity   = "1";
-      imgWrap.style.transform = "translateX(0) scale(1)";
-      imgWrap.style.filter    = "blur(0px)";
-    });
-  }
-
-  if (cue) {
-    setTimeout(() => {
-      cue.style.opacity    = "0";
-      cue.style.transition = "opacity 0.8s ease";
-      requestAnimationFrame(() => { cue.style.opacity = "1"; });
-    }, 1200);
-  }
-}
-
-/* ========================= */
-/* NAVBAR                    */
+/* NAVBAR EFFECT */
 /* ========================= */
 
 const navbar = document.getElementById("navbar");
 
 window.addEventListener("scroll", () => {
-  navbar.classList.toggle("scrolled", window.scrollY > 40);
-}, { passive: true });
+    if (window.scrollY > 50) {
+    navbar.style.background = "rgba(5,5,5,0.55)";
+    navbar.style.backdropFilter = "blur(25px)";
+    navbar.style.webkitBackdropFilter = "blur(25px)";
+    navbar.style.borderBottom = "1px solid rgba(255,255,255,0.08)";
+    navbar.style.boxShadow = "0 8px 30px rgba(0,0,0,.25)";
+} else {
+    navbar.style.background = "transparent";
+    navbar.style.backdropFilter = "none";
+    navbar.style.webkitBackdropFilter = "none";
+    navbar.style.borderBottom = "none";
+    navbar.style.boxShadow = "none";
+}
+});
 
 /* ========================= */
-/* SCROLL PROGRESS BAR       */
+/* COUNTER ANIMATIONS */
 /* ========================= */
 
-const progressBar = document.getElementById("progress-bar");
+const counters = document.querySelectorAll(".counter");
+let counterStarted = false;
 
-window.addEventListener("scroll", () => {
-  const pct = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
-  progressBar.style.width = pct + "%";
-}, { passive: true });
+function runCounters() {
+    if (counterStarted) return;
+    counterStarted = true;
+    counters.forEach(counter => {
+        const target = +counter.getAttribute("data-target");
+        let current = 0;
+        const increment = target / 80;
+        const updateCounter = () => {
+            if (current < target) {
+                current += increment;
+                counter.innerText = Math.ceil(current);
+                requestAnimationFrame(updateCounter);
+            } else {
+                counter.innerText = target + "+";
+            }
+        };
+        updateCounter();
+    });
+}
+
+const statsSection = document.querySelector(".stats-section");
+const statsObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => { if (entry.isIntersecting) runCounters(); });
+}, { threshold: 0.2 });
+if (statsSection) statsObserver.observe(statsSection);
 
 /* ========================= */
-/* HAMBURGER MENU            */
+/* PROJECT MODAL */
+/* ========================= */
+
+const modal = document.getElementById("projectModal");
+const modalTitle = document.getElementById("modalTitle");
+const modalCategory = document.getElementById("modalCategory");
+const modalLink = document.getElementById("modalLink");
+const closeModal = document.querySelector(".close-modal");
+const cards = document.querySelectorAll(".project-card");
+
+cards.forEach(card => {
+    card.addEventListener("click", () => {
+        modalTitle.textContent = card.dataset.title || "Project";
+        modalCategory.textContent = card.dataset.category || "Creative Content";
+        modalLink.href = card.dataset.link || "#";
+        modal.style.display = "flex";
+        document.body.style.overflow = "hidden";
+    });
+});
+
+if (closeModal) {
+    closeModal.addEventListener("click", () => {
+        modal.style.display = "none";
+        document.body.style.overflow = "auto";
+    });
+}
+
+window.addEventListener("click", (e) => {
+    if (e.target === modal) {
+        modal.style.display = "none";
+        document.body.style.overflow = "auto";
+    }
+});
+
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && modal.style.display === "flex") {
+        modal.style.display = "none";
+        document.body.style.overflow = "auto";
+    }
+});
+
+/* ========================= */
+/* HAMBURGER MENU */
 /* ========================= */
 
 const hamburger = document.getElementById("hamburger");
-const navEl     = document.querySelector("nav");
+const navMenu = document.querySelector("nav");
 
 hamburger.addEventListener("click", () => {
-  hamburger.classList.toggle("open");
-  navEl.classList.toggle("open");
-  document.body.style.overflow = navEl.classList.contains("open") ? "hidden" : "";
+    hamburger.classList.toggle("open");
+    navMenu.classList.toggle("open");
 });
 
-navEl.querySelectorAll("a").forEach(link => {
-  link.addEventListener("click", () => {
-    hamburger.classList.remove("open");
-    navEl.classList.remove("open");
-    document.body.style.overflow = "";
-  });
+navMenu.querySelectorAll("a").forEach(link => {
+    link.addEventListener("click", () => {
+        hamburger.classList.remove("open");
+        navMenu.classList.remove("open");
+    });
 });
 
 /* ========================= */
-/* SMOOTH ANCHOR SCROLL      */
+/* SKILLS ANIMATION */
 /* ========================= */
 
-document.querySelectorAll('a[href^="#"]').forEach(a => {
-  a.addEventListener("click", function(e) {
-    const target = document.querySelector(this.getAttribute("href"));
-    if (target) {
-      e.preventDefault();
-      target.scrollIntoView({ behavior: "smooth", block: "start" });
+const skillFills = document.querySelectorAll(".skill-fill");
+const skillObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            skillFills.forEach(fill => {
+                fill.style.width = fill.getAttribute("data-width") + "%";
+            });
+        }
+    });
+}, { threshold: 0.3 });
+const skillsSection = document.querySelector(".skills-section");
+if (skillsSection) skillObserver.observe(skillsSection);
+
+/* ========================= */
+/* SCROLL PROGRESS BAR */
+/* ========================= */
+
+const progressBar = document.getElementById("progress-bar");
+window.addEventListener("scroll", () => {
+    const scrolled = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+    progressBar.style.width = scrolled + "%";
+});
+
+/* =========================================== */
+/* APPLE-STYLE SCROLL-DRIVEN ANIMATIONS        */
+/* Everything below is tied to scroll position */
+/* =========================================== */
+
+/* Helper: get how far an element is through the viewport (0 → 1) */
+function getScrollProgress(el, start = 0.15, end = 0.85) {
+    const rect = el.getBoundingClientRect();
+    const vh = window.innerHeight;
+    const raw = 1 - (rect.top / (vh * end));
+    return Math.min(1, Math.max(0, raw));
+}
+
+/* ── 1. HERO SECTION ── cinematic scroll-out */
+const heroContent = document.querySelector(".hero-content");
+const heroImage   = document.querySelector(".hero-image img");
+const heroTag     = document.querySelector(".hero-tag");
+const heroH1      = document.querySelector(".hero h1");
+const heroH2      = document.querySelector(".hero h2");
+const heroP       = document.querySelector(".hero p");
+const heroBtns    = document.querySelector(".hero-buttons");
+
+/* ── 2. STATS — stagger in from below */
+const statCards = document.querySelectorAll(".stat");
+
+/* ── 3. SECTION HEADERS — slide-in from left */
+const sectionHeaders = document.querySelectorAll(".section-header h2");
+
+/* ── 4. PROJECT CARDS — staggered cascade */
+const projectCards = document.querySelectorAll(".project-card");
+
+/* ── 5. EPISODE CARDS — slide from left */
+const episodeCards = document.querySelectorAll(".episode-card");
+
+/* ── 6. STACK PILLS — pop in */
+const stackPills = document.querySelectorAll(".stack-grid span");
+
+/* ── 7. ACHIEVEMENT CARDS — scale in */
+const achievementCards = document.querySelectorAll(".achievement-card");
+
+/* ── 8. ABOUT TEXT — word-level reveal */
+const aboutParagraph = document.querySelector(".about p");
+
+/* ── 9. CONTACT — dramatic zoom */
+const contactSection = document.querySelector(".contact-section");
+const contactH2      = document.querySelector(".contact-section h2");
+const contactBtns    = document.querySelector(".contact-buttons");
+
+/* ========================= */
+/* INITIAL STATE SETUP       */
+/* ========================= */
+
+function initScrollStates() {
+    /* Hero elements — set will-change for GPU compositing */
+    [heroTag, heroH1, heroH2, heroP, heroBtns].forEach(el => {
+        if (el) el.style.willChange = "opacity, transform";
+    });
+    if (heroImage) heroImage.style.willChange = "transform, opacity";
+
+    /* Stat cards */
+    statCards.forEach((el, i) => {
+        el.style.opacity = "0";
+        el.style.transform = `translateY(60px)`;
+        el.style.transition = "none";
+        el.style.willChange = "opacity, transform";
+    });
+
+    /* Section headers */
+    sectionHeaders.forEach(el => {
+        el.style.opacity = "0";
+        el.style.transform = "translateX(-60px)";
+        el.style.willChange = "opacity, transform";
+    });
+
+    /* Project cards */
+    projectCards.forEach((el, i) => {
+        el.style.opacity = "0";
+        el.style.transform = "translateY(50px) scale(0.92)";
+        el.style.willChange = "opacity, transform";
+    });
+
+    /* Episode cards */
+    episodeCards.forEach(el => {
+        el.style.opacity = "0";
+        el.style.transform = "translateX(-80px)";
+        el.style.willChange = "opacity, transform";
+    });
+
+    /* Stack pills */
+    stackPills.forEach(el => {
+        el.style.opacity = "0";
+        el.style.transform = "scale(0.6) translateY(20px)";
+        el.style.willChange = "opacity, transform";
+    });
+
+    /* Achievement cards */
+    achievementCards.forEach(el => {
+        el.style.opacity = "0";
+        el.style.transform = "scale(0.8) translateY(30px)";
+        el.style.willChange = "opacity, transform";
+    });
+
+    /* About paragraph */
+    if (aboutParagraph) {
+        aboutParagraph.style.opacity = "0";
+        aboutParagraph.style.transform = "translateY(30px)";
+        aboutParagraph.style.willChange = "opacity, transform";
     }
-  });
-});
 
-/* ========================= */
-/* HERO — STICKY SCROLL-OUT  */
-/* Apple cinematic parallax  */
-/* ========================= */
-
-const heroContent  = document.querySelector(".hero-content");
-const heroImgWrap  = document.getElementById("heroImgWrap");
-const heroPinWrap  = document.querySelector(".hero-pin-wrap");
-const scrollCue    = document.getElementById("scrollCue");
-
-function updateHeroScroll() {
-  if (!heroPinWrap) return;
-
-  const heroH      = window.innerHeight;
-  const totalScroll = heroPinWrap.offsetHeight - heroH;
-  const scrolled   = Math.min(Math.max(window.scrollY, 0), totalScroll);
-  const progress   = scrolled / totalScroll; // 0 → 1
-
-  const ep = easeInOut(progress);
-
-  /* Content: fade up and blur out */
-  if (heroContent) {
-    const t = Math.min(1, ep * 1.4);
-    heroContent.style.opacity   = `${1 - t}`;
-    heroContent.style.transform = `translateY(${-ep * 100}px)`;
-    heroContent.style.filter    = `blur(${ep * 10}px)`;
-  }
-
-  /* Image: slower parallax, scale out, fade */
-  if (heroImgWrap) {
-    const imgT = Math.min(1, ep * 1.1);
-    heroImgWrap.style.opacity   = `${1 - imgT * 0.9}`;
-    heroImgWrap.style.transform = `translateY(${scrolled * 0.18}px) scale(${1 - progress * 0.18})`;
-    heroImgWrap.style.filter    = `blur(${ep * 6}px)`;
-  }
-
-  /* Scroll cue: fades out immediately */
-  if (scrollCue) {
-    scrollCue.style.opacity = `${1 - Math.min(1, progress * 6)}`;
-  }
+    /* Contact */
+    if (contactH2) {
+        contactH2.style.opacity = "0";
+        contactH2.style.transform = "scale(0.85) translateY(40px)";
+        contactH2.style.willChange = "opacity, transform";
+    }
+    if (contactBtns) {
+        contactBtns.style.opacity = "0";
+        contactBtns.style.transform = "translateY(30px)";
+        contactBtns.style.willChange = "opacity, transform";
+    }
 }
 
 /* ========================= */
 /* EASING FUNCTIONS          */
 /* ========================= */
 
-function easeOut(t)   { return 1 - Math.pow(1 - t, 3); }
-function easeInOut(t) { return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2; }
+function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
+function easeInOut(t) { return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2, 3)/2; }
 
 /* ========================= */
-/* ONE-SHOT TRIGGER SET      */
+/* SCROLL ANIMATION ENGINE   */
 /* ========================= */
 
-const triggered = new Set();
-
-/* ========================= */
-/* STAT COUNTER ANIMATION    */
-/* ========================= */
-
-let countersDone = false;
-
-function runCounters() {
-  if (countersDone) return;
-  countersDone = true;
-  document.querySelectorAll(".counter").forEach(counter => {
-    const target = +counter.getAttribute("data-target");
-    let current  = 0;
-    const steps  = 70;
-    const inc    = target / steps;
-    const tick   = () => {
-      current += inc;
-      if (current < target) {
-        counter.innerText = Math.ceil(current);
-        requestAnimationFrame(tick);
-      } else {
-        counter.innerText = target;
-      }
-    };
-    tick();
-  });
-}
-
-/* ========================= */
-/* MAIN SCROLL ENGINE        */
-/* ========================= */
+const triggered = new Set(); // one-shot animations
 
 function onScroll() {
-  const vh = window.innerHeight;
+    const scrollY = window.scrollY;
+    const vh = window.innerHeight;
 
-  /* Hero parallax */
-  updateHeroScroll();
+    /* ── HERO: scroll-out parallax as user scrolls down ── */
+    if (heroContent && heroImage) {
+        const heroProgress = Math.min(1, scrollY / (vh * 0.7));
+        const ep = easeInOut(heroProgress);
 
-  /* ── STAT CARDS ── stagger up */
-  document.querySelectorAll(".stat").forEach((el, i) => {
-    if (triggered.has(el)) return;
-    if (el.getBoundingClientRect().top < vh * 0.88) {
-      setTimeout(() => {
-        el.style.transition = `opacity 0.75s cubic-bezier(0.22,1,0.36,1),
-                               transform 0.75s cubic-bezier(0.22,1,0.36,1)`;
-        el.style.opacity   = "1";
-        el.style.transform = "translateY(0)";
-      }, i * 80);
-      triggered.add(el);
-      runCounters();
+        /* Content floats up and fades */
+        if (heroContent) {
+            heroContent.style.opacity    = `${1 - ep * 1.2}`;
+            heroContent.style.transform  = `translateY(${-ep * 80}px)`;
+        }
+
+        /* Individual hero children stagger on scroll-out */
+        const heroChildren = [heroTag, heroH1, heroH2, heroP, heroBtns];
+        heroChildren.forEach((el, i) => {
+            if (!el) return;
+            const delay = i * 0.06;
+            const localP = Math.max(0, ep - delay);
+            el.style.opacity   = `${1 - localP * 2}`;
+            el.style.transform = `translateY(${-localP * 60}px)`;
+        });
+
+        /* Profile image — slower parallax + slight scale */
+        heroImage.style.transform = `translateY(${scrollY * 0.15}px) scale(${1 - heroProgress * 0.25})`;
+        heroImage.style.opacity   = `${1 - heroProgress * 0.6}`;
     }
-  });
 
-  /* ── SECTION HEADERS ── slide from left */
-  document.querySelectorAll(".section-header h2").forEach(el => {
-    if (triggered.has(el)) return;
-    if (el.getBoundingClientRect().top < vh * 0.88) {
-      el.style.transition = "opacity 0.85s cubic-bezier(0.22,1,0.36,1), transform 0.85s cubic-bezier(0.22,1,0.36,1)";
-      el.style.opacity   = "1";
-      el.style.transform = "translateX(0)";
-      triggered.add(el);
-    }
-  });
+    /* ── STAT CARDS: stagger in from bottom ── */
+    statCards.forEach((el, i) => {
+        if (triggered.has(el)) return;
+        const rect = el.getBoundingClientRect();
+        if (rect.top < vh * 0.88) {
+            const delay = i * 90;
+            setTimeout(() => {
+                el.style.transition = "opacity 0.7s cubic-bezier(.22,1,.36,1), transform 0.7s cubic-bezier(.22,1,.36,1)";
+                el.style.opacity   = "1";
+                el.style.transform = "translateY(0)";
+            }, delay);
+            triggered.add(el);
+        }
+    });
 
-  /* ── PROJECT CARDS ── staggered cascade */
-  document.querySelectorAll(".project-card").forEach((el, i) => {
-    if (triggered.has(el)) return;
-    const r = el.getBoundingClientRect();
-    if (r.top < vh * 0.92 && r.left < window.innerWidth * 1.1) {
-      setTimeout(() => {
-        el.style.transition = `opacity 0.65s cubic-bezier(0.22,1,0.36,1) ${(i%3)*0.08}s,
-                               transform 0.65s cubic-bezier(0.22,1,0.36,1) ${(i%3)*0.08}s`;
-        el.style.opacity   = "1";
-        el.style.transform = "translateY(0) scale(1)";
-      }, (i % 3) * 80);
-      triggered.add(el);
-    }
-  });
+    /* ── SECTION HEADERS: slide in from left ── */
+    sectionHeaders.forEach(el => {
+        if (triggered.has(el)) return;
+        const rect = el.getBoundingClientRect();
+        if (rect.top < vh * 0.85) {
+            el.style.transition = "opacity 0.8s cubic-bezier(.22,1,.36,1), transform 0.8s cubic-bezier(.22,1,.36,1)";
+            el.style.opacity   = "1";
+            el.style.transform = "translateX(0)";
+            triggered.add(el);
+        }
+    });
 
-  /* ── EPISODE CARDS ── slide from left with stagger */
-  document.querySelectorAll(".episode-card").forEach((el, i) => {
-    if (triggered.has(el)) return;
-    if (el.getBoundingClientRect().top < vh * 0.88) {
-      setTimeout(() => {
-        el.style.transition = "opacity 0.8s cubic-bezier(0.22,1,0.36,1), transform 0.8s cubic-bezier(0.22,1,0.36,1)";
-        el.style.opacity   = "1";
-        el.style.transform = "translateX(0)";
-      }, i * 120);
-      triggered.add(el);
-    }
-  });
+    /* ── PROJECT CARDS: cascade in ── */
+    projectCards.forEach((el, i) => {
+        if (triggered.has(el)) return;
+        const rect = el.getBoundingClientRect();
+        if (rect.left < window.innerWidth * 1.1 && rect.top < vh * 0.92) {
+            const delay = (i % 3) * 100;
+            setTimeout(() => {
+                el.style.transition = "opacity 0.65s cubic-bezier(.22,1,.36,1), transform 0.65s cubic-bezier(.22,1,.36,1)";
+                el.style.opacity   = "1";
+                el.style.transform = "translateY(0) scale(1)";
+            }, delay);
+            triggered.add(el);
+        }
+    });
 
-  /* ── SEASONS HEADER ── */
-  const seasonsHeader = document.querySelector(".seasons-header");
-  if (seasonsHeader && !triggered.has(seasonsHeader)) {
-    if (seasonsHeader.getBoundingClientRect().top < vh * 0.88) {
-      seasonsHeader.style.transition = "opacity 0.9s cubic-bezier(0.22,1,0.36,1), transform 0.9s cubic-bezier(0.22,1,0.36,1)";
-      seasonsHeader.style.opacity   = "1";
-      seasonsHeader.style.transform = "translateY(0)";
-      triggered.add(seasonsHeader);
-    }
-  }
+    /* ── EPISODE CARDS: slide in from left with stagger ── */
+    episodeCards.forEach((el, i) => {
+        if (triggered.has(el)) return;
+        const rect = el.getBoundingClientRect();
+        if (rect.top < vh * 0.85) {
+            setTimeout(() => {
+                el.style.transition = "opacity 0.8s cubic-bezier(.22,1,.36,1), transform 0.8s cubic-bezier(.22,1,.36,1)";
+                el.style.opacity   = "1";
+                el.style.transform = "translateX(0)";
+            }, i * 130);
+            triggered.add(el);
+        }
+    });
 
-  /* ── STACK PILLS ── pop in */
-  document.querySelectorAll(".stack-grid span").forEach((el, i) => {
-    if (triggered.has(el)) return;
-    if (el.getBoundingClientRect().top < vh * 0.92) {
-      setTimeout(() => {
-        el.style.transition = `opacity 0.5s cubic-bezier(0.34,1.56,0.64,1),
-                               transform 0.5s cubic-bezier(0.34,1.56,0.64,1)`;
-        el.style.opacity   = "1";
-        el.style.transform = "scale(1) translateY(0)";
-      }, i * 55);
-      triggered.add(el);
-    }
-  });
+    /* ── STACK PILLS: pop in with stagger ── */
+    stackPills.forEach((el, i) => {
+        if (triggered.has(el)) return;
+        const rect = el.getBoundingClientRect();
+        if (rect.top < vh * 0.9) {
+            setTimeout(() => {
+                el.style.transition = "opacity 0.5s cubic-bezier(.34,1.56,.64,1), transform 0.5s cubic-bezier(.34,1.56,.64,1)";
+                el.style.opacity   = "1";
+                el.style.transform = "scale(1) translateY(0)";
+            }, i * 60);
+            triggered.add(el);
+        }
+    });
 
-  /* ── ACHIEVEMENT CARDS ── scale in */
-  document.querySelectorAll(".achievement-card").forEach((el, i) => {
-    if (triggered.has(el)) return;
-    if (el.getBoundingClientRect().top < vh * 0.9) {
-      setTimeout(() => {
-        el.style.transition = `opacity 0.7s cubic-bezier(0.34,1.2,0.64,1),
-                               transform 0.7s cubic-bezier(0.34,1.2,0.64,1)`;
-        el.style.opacity   = "1";
-        el.style.transform = "scale(1) translateY(0)";
-      }, i * 140);
-      triggered.add(el);
-    }
-  });
+    /* ── ACHIEVEMENT CARDS: scale up ── */
+    achievementCards.forEach((el, i) => {
+        if (triggered.has(el)) return;
+        const rect = el.getBoundingClientRect();
+        if (rect.top < vh * 0.88) {
+            setTimeout(() => {
+                el.style.transition = "opacity 0.7s cubic-bezier(.34,1.2,.64,1), transform 0.7s cubic-bezier(.34,1.2,.64,1)";
+                el.style.opacity   = "1";
+                el.style.transform = "scale(1) translateY(0)";
+            }, i * 150);
+            triggered.add(el);
+        }
+    });
 
-  /* ── SKILLS HEADER ── */
-  const skillH2 = document.querySelector(".skills-section h2");
-  if (skillH2 && !triggered.has(skillH2)) {
-    if (skillH2.getBoundingClientRect().top < vh * 0.88) {
-      skillH2.style.transition = "opacity 0.85s cubic-bezier(0.22,1,0.36,1), transform 0.85s cubic-bezier(0.22,1,0.36,1)";
-      skillH2.style.opacity   = "1";
-      skillH2.style.transform = "translateX(0)";
-      triggered.add(skillH2);
+    /* ── ABOUT PARAGRAPH ── */
+    if (aboutParagraph && !triggered.has(aboutParagraph)) {
+        const rect = aboutParagraph.getBoundingClientRect();
+        if (rect.top < vh * 0.85) {
+            aboutParagraph.style.transition = "opacity 1s ease, transform 1s ease";
+            aboutParagraph.style.opacity    = "1";
+            aboutParagraph.style.transform  = "translateY(0)";
+            triggered.add(aboutParagraph);
+        }
     }
-  }
 
-  /* ── SKILL FILLS ── */
-  const skillsSection = document.querySelector(".skills-section");
-  if (skillsSection && !triggered.has(skillsSection)) {
-    if (skillsSection.getBoundingClientRect().top < vh * 0.88) {
-      document.querySelectorAll(".skill-fill").forEach(fill => {
-        fill.style.width = fill.getAttribute("data-width") + "%";
-      });
-      triggered.add(skillsSection);
-    }
-  }
+    /* ── CONTACT SECTION: dramatic zoom-in ── */
+    if (contactH2 && !triggered.has(contactH2)) {
+        const rect = contactH2.getBoundingClientRect();
+        if (rect.top < vh * 0.85) {
+            contactH2.style.transition = "opacity 1s cubic-bezier(.22,1,.36,1), transform 1s cubic-bezier(.22,1,.36,1)";
+            contactH2.style.opacity    = "1";
+            contactH2.style.transform  = "scale(1) translateY(0)";
+            triggered.add(contactH2);
 
-  /* ── ABOUT PARAGRAPH ── */
-  const aboutP = document.querySelector(".about p");
-  if (aboutP && !triggered.has(aboutP)) {
-    if (aboutP.getBoundingClientRect().top < vh * 0.88) {
-      aboutP.style.transition = "opacity 1.1s ease, transform 1.1s ease";
-      aboutP.style.opacity   = "1";
-      aboutP.style.transform = "translateY(0)";
-      triggered.add(aboutP);
+            if (contactBtns) {
+                setTimeout(() => {
+                    contactBtns.style.transition = "opacity 0.8s ease, transform 0.8s ease";
+                    contactBtns.style.opacity    = "1";
+                    contactBtns.style.transform  = "translateY(0)";
+                }, 300);
+            }
+        }
     }
-  }
-
-  /* ── CONTACT ── zoom in */
-  const contactInner = document.querySelector(".contact-inner");
-  if (contactInner && !triggered.has(contactInner)) {
-    if (contactInner.getBoundingClientRect().top < vh * 0.88) {
-      contactInner.style.transition = "opacity 1s cubic-bezier(0.22,1,0.36,1), transform 1s cubic-bezier(0.22,1,0.36,1)";
-      contactInner.style.opacity   = "1";
-      contactInner.style.transform = "translateY(0) scale(1)";
-      triggered.add(contactInner);
-    }
-  }
 }
 
 /* ========================= */
-/* PROJECT MODAL             */
+/* SMOOTH SECTION SCROLL     */
 /* ========================= */
 
-const modal         = document.getElementById("projectModal");
-const modalTitle    = document.getElementById("modalTitle");
-const modalCategory = document.getElementById("modalCategory");
-const modalLink     = document.getElementById("modalLink");
-
-document.querySelectorAll(".project-card").forEach(card => {
-  card.addEventListener("click", () => {
-    modalTitle.textContent    = card.dataset.title    || "Project";
-    modalCategory.textContent = card.dataset.category || "Creative Content";
-    modalLink.href            = card.dataset.link     || "#";
-    modal.classList.add("open");
-    document.body.style.overflow = "hidden";
-  });
-});
-
-function closeModalFn() {
-  modal.classList.remove("open");
-  document.body.style.overflow = "";
-}
-
-document.querySelector(".close-modal")?.addEventListener("click", closeModalFn);
-document.querySelector(".modal-backdrop")?.addEventListener("click", closeModalFn);
-document.addEventListener("keydown", e => {
-  if (e.key === "Escape" && modal.classList.contains("open")) closeModalFn();
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener("click", function (e) {
+        const target = document.querySelector(this.getAttribute("href"));
+        if (target) {
+            e.preventDefault();
+            target.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+    });
 });
 
 /* ========================= */
-/* CARD 3D MAGNETIC HOVER    */
+/* CARD HOVER DEPTH (3D)     */
 /* ========================= */
 
-document.querySelectorAll(".project-card").forEach(card => {
-  card.addEventListener("mousemove", e => {
-    const rect = card.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width  - 0.5) * 12;
-    const y = ((e.clientY - rect.top)  / rect.height - 0.5) * -12;
-    card.style.transform = `perspective(1000px) rotateX(${y}deg) rotateY(${x}deg) scale(1.06)`;
-  });
-  card.addEventListener("mouseleave", () => {
-    card.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)";
-    card.style.transition = "transform 0.5s cubic-bezier(0.22,1,0.36,1)";
-  });
-  card.addEventListener("mouseenter", () => {
-    card.style.transition = "transform 0.1s ease";
-  });
+cards.forEach(card => {
+    card.addEventListener("mousemove", (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const rotateY = ((x / rect.width) - 0.5) * 8;
+        const rotateX = ((y / rect.height) - 0.5) * -8;
+        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
+    });
+    card.addEventListener("mouseleave", () => {
+        card.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)";
+    });
 });
 
 /* ========================= */
-/* FLOATING CARD ANIMATION   */
+/* FLOATING SEASON CARDS     */
 /* ========================= */
+
+const seasonCards = document.querySelectorAll(".season-card");
+seasonCards.forEach((card, index) => {
+    card.style.animation = `floatCard 4s ease-in-out ${index * 0.3}s infinite`;
+});
 
 const floatStyle = document.createElement("style");
 floatStyle.innerHTML = `
 @keyframes floatCard {
   0%,100% { transform: translateY(0); }
-  50%      { transform: translateY(-7px); }
-}`;
+  50%      { transform: translateY(-6px); }
+}
+`;
 document.head.appendChild(floatStyle);
 
-document.querySelectorAll(".season-card").forEach((card, i) => {
-  card.style.animation = `floatCard 4s ease-in-out ${i * 0.3}s infinite`;
-});
-
 /* ========================= */
-/* RAF SCROLL LOOP           */
+/* PERFORMANCE               */
 /* ========================= */
-
-let ticking = false;
-window.addEventListener("scroll", () => {
-  if (!ticking) {
-    requestAnimationFrame(() => {
-      onScroll();
-      ticking = false;
-    });
-    ticking = true;
-  }
-}, { passive: true });
-
-/* ========================= */
-/* INIT ON DOM READY         */
-/* ========================= */
-
-document.addEventListener("DOMContentLoaded", () => {
-  onScroll(); // Seed initial positions
-});
 
 window.addEventListener("pageshow", () => {
-  document.body.classList.add("loaded");
+    document.body.classList.add("loaded");
 });
+
+/* ========================= */
+/* INIT + RAF LOOP           */
+/* ========================= */
+
+initScrollStates();
+
+/* Run immediately once so above-fold elements render correctly */
+window.addEventListener("DOMContentLoaded", () => {
+    onScroll();
+});
+
+/* Passive scroll listener for performance */
+let ticking = false;
+window.addEventListener("scroll", () => {
+    if (!ticking) {
+        requestAnimationFrame(() => {
+            onScroll();
+            ticking = false;
+        });
+        ticking = true;
+    }
+}, { passive: true });
