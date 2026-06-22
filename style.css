@@ -205,7 +205,7 @@ body::before {
   padding: 24px 80px;
   z-index: 999;
   backdrop-filter: blur(20px);
-  transition: .4s;
+  transition: all 0.4s ease;
 }
 
 .logo {
