@@ -263,6 +263,24 @@ nav a:hover { color: var(--red); }
   position: relative;
 }
 
+.hero::before {
+  content: "";
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(
+    circle,
+    rgba(229,9,20,.25),
+    transparent 70%
+  );
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  filter: blur(80px);
+  z-index: 0;
+  pointer-events: none;
+}
+
 .hero-content {
   max-width: 650px;
   z-index: 2;
