@@ -451,6 +451,8 @@ position: relative;
   cursor: pointer;
   transition: .45s;
   background: #111;
+  transform-style: preserve-3d;
+transition: transform 0.15s ease;
 }
 
 .project-card img {
