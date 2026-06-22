@@ -586,7 +586,27 @@ color:var(--red);
 
 margin-bottom:10px;
 
+animation: statGlow 2.5s ease-in-out infinite;
+
 }
+
+@keyframes statGlow{
+
+0%,100%{
+text-shadow:
+0 0 10px rgba(229,9,20,0.4),
+0 0 20px rgba(229,9,20,0.2);
+}
+
+50%{
+text-shadow:
+0 0 20px rgba(229,9,20,0.9),
+0 0 40px rgba(229,9,20,0.6),
+0 0 60px rgba(229,9,20,0.3);
+}
+
+}
+
 
 .stat span{
 
