@@ -333,6 +333,8 @@ nav a:hover { color: var(--red); }
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 2;
+position: relative;
 }
 
 .hero-image img {
