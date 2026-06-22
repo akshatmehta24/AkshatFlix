@@ -309,7 +309,7 @@ function onScroll() {
         });
 
         /* Profile image — slower parallax + slight scale */
-        heroImage.style.transform = `translateY(${scrollY * 0.12}px) scale(${1 - heroProgress * 0.08})`;
+        heroImage.style.transform = `translateY(${scrollY * 0.15}px) scale(${1 - heroProgress * 0.25})`;
         heroImage.style.opacity   = `${1 - heroProgress * 0.6}`;
     }
 
