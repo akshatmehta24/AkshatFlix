@@ -406,6 +406,30 @@ nav a:hover { color: var(--red); }
 
 .stat span { color: var(--text-secondary); }
 
+.stack-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 30px;
+}
+
+.stack-grid span {
+  display: inline-flex;
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  font-size: 0.9rem;
+  color: #fff;
+  transition: 0.3s;
+}
+
+.stack-grid span:hover {
+  background: rgba(229, 9, 20, 0.15);
+  border-color: rgba(229, 9, 20, 0.4);
+}
+
+
 /* ========================= */
 /* CONTENT SECTIONS */
 /* ========================= */
