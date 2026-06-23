@@ -660,6 +660,10 @@ nav a:hover { color: var(--red); }
 /* SKILLS */
 /* ========================= */
 
+.ai-stack {
+  padding: 80px 8%;
+}
+
 .skills-section { padding: 100px 8%; }
 
 .skills-grid {
