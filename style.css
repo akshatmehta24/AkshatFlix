@@ -1018,7 +1018,7 @@ footer {
   flex-wrap: wrap;
   gap: 12px;
   margin-top: 30px;
-  justify-content: center;
+  justify-content: flex-start;
 }
 
 
