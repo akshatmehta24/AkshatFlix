@@ -6,317 +6,464 @@
 const isMobile = () => window.innerWidth <= 768;
 
 /* ========================= */
-/* CHANGE 7: INTRO SCREEN    */
-/* Clean fade, no overlap    */
+/* INTRO SCREEN */
 /* ========================= */
 
 window.addEventListener("load", () => {
     const intro = document.getElementById("intro");
-    if (!intro) return;
-
-    // Wait 2.6s then cleanly fade out
     setTimeout(() => {
-        intro.classList.add("hide");
-        // Remove from DOM after transition so it can't overlap
-        setTimeout(() => {
-            intro.style.display = "none";
-        }, 700);
-    }, 2600);
+        intro.style.opacity = "0";
+        setTimeout(() => { intro.style.display = "none"; }, 800);
+    }, 2800);
 });
 
 /* ========================= */
-/* SMOOTH NAVBAR             */
+/* NAVBAR EFFECT */
 /* ========================= */
 
 const navbar = document.getElementById("navbar");
 
-function updateNavbar() {
-    if (!navbar) return;
-    if (window.scrollY > 40) {
-        navbar.classList.add("scrolled");
+window.addEventListener("scroll", () => {
+    if (window.scrollY > 50) {
+        navbar.style.background = "rgba(5,5,5,0.85)";
+        navbar.style.backdropFilter = "blur(20px)";
+        navbar.style.boxShadow = "0 10px 30px rgba(0,0,0,.4)";
     } else {
-        navbar.classList.remove("scrolled");
+        navbar.style.background = "transparent";
+        navbar.style.boxShadow = "none";
     }
-}
-
-window.addEventListener("scroll", updateNavbar, { passive: true });
-updateNavbar();
+});
 
 /* ========================= */
-/* SCROLL PROGRESS BAR       */
-/* ========================= */
-
-const progressBar = document.getElementById("progress-bar");
-function updateProgress() {
-    if (!progressBar) return;
-    const max = document.documentElement.scrollHeight - window.innerHeight;
-    const pct = max > 0 ? (window.scrollY / max) * 100 : 0;
-    progressBar.style.width = pct + "%";
-}
-window.addEventListener("scroll", updateProgress, { passive: true });
-
-/* ========================= */
-/* COUNTER ANIMATIONS        */
+/* COUNTER ANIMATIONS */
 /* ========================= */
 
 const counters = document.querySelectorAll(".counter");
-let countersDone = false;
+let counterStarted = false;
 
 function runCounters() {
-    if (countersDone) return;
-    countersDone = true;
+    if (counterStarted) return;
+    counterStarted = true;
     counters.forEach(counter => {
         const target = +counter.getAttribute("data-target");
-        const duration = 1800;
-        const step = target / (duration / 16);
         let current = 0;
-        const tick = () => {
-            current = Math.min(current + step, target);
-            counter.textContent = Math.ceil(current);
-            if (current < target) requestAnimationFrame(tick);
-            else counter.textContent = target + "+";
-        };
-        tick();
-    });
-}
-
-/* ========================= */
-/* INTERSECTION OBSERVER     */
-/* Apple-style stagger reveals */
-/* ========================= */
-
-function reveal(entries, observer) {
-    entries.forEach(entry => {
-        if (!entry.isIntersecting) return;
-        const el = entry.target;
-
-        // Stagger children if data-stagger set
-        const delay = el.dataset.delay ? parseFloat(el.dataset.delay) : 0;
-
-        setTimeout(() => {
-            el.classList.add("revealed");
-            // Trigger skill bars
-            if (el.classList.contains("skill-item")) {
-                const fill = el.querySelector(".skill-fill");
-                if (fill) fill.style.width = fill.getAttribute("data-width") + "%";
+        const increment = target / 80;
+        const updateCounter = () => {
+            if (current < target) {
+                current += increment;
+                counter.innerText = Math.ceil(current);
+                requestAnimationFrame(updateCounter);
+            } else {
+                counter.innerText = target + "+";
             }
-        }, delay);
-
-        observer.unobserve(el);
+        };
+        updateCounter();
     });
 }
 
-const observerOpts = {
-    threshold: 0.12,
-    rootMargin: "0px 0px -40px 0px"
-};
-
-const io = new IntersectionObserver(reveal, observerOpts);
-
-// Stats — stagger each card
-document.querySelectorAll(".stat").forEach((el, i) => {
-    el.dataset.delay = i * 80;
-    io.observe(el);
-});
-
-// Counter trigger
 const statsSection = document.querySelector(".stats-section");
-if (statsSection) {
-    const counterObs = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting) { runCounters(); counterObs.disconnect(); }
-    }, { threshold: 0.2 });
-    counterObs.observe(statsSection);
-}
-
-// Section headers
-document.querySelectorAll(".section-header h2, .section-label").forEach(el => io.observe(el));
-
-// Project cards — stagger within each row
-document.querySelectorAll(".content-row").forEach(row => {
-    row.querySelectorAll(".project-card").forEach((card, i) => {
-        card.dataset.delay = i * 100;
-        io.observe(card);
-    });
-});
-
-// Episode cards — stagger
-document.querySelectorAll(".episode-card").forEach((el, i) => {
-    el.dataset.delay = i * 120;
-    io.observe(el);
-});
-
-// Stack pills — stagger with spring
-document.querySelectorAll(".stack-grid span").forEach((el, i) => {
-    el.dataset.delay = i * 55;
-    io.observe(el);
-});
-
-// Achievement cards
-document.querySelectorAll(".achievement-card").forEach((el, i) => {
-    el.dataset.delay = i * 120;
-    io.observe(el);
-});
-
-// Skill items
-document.querySelectorAll(".skill-item").forEach((el, i) => {
-    el.dataset.delay = i * 100;
-    io.observe(el);
-});
-
-// About
-document.querySelectorAll(".about h2, .about p").forEach(el => io.observe(el));
-
-// Contact
-document.querySelectorAll(".contact-section h2, .contact-section p, .contact-buttons").forEach(el => io.observe(el));
+const statsObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => { if (entry.isIntersecting) runCounters(); });
+}, { threshold: 0.2 });
+if (statsSection) statsObserver.observe(statsSection);
 
 /* ========================= */
-/* CHANGE 6: HERO PARALLAX   */
-/* Apple zoom + parallax     */
-/* Desktop only              */
+/* PROJECT MODAL */
 /* ========================= */
 
-const heroContent  = document.querySelector(".hero-content");
-const heroImageEl  = document.querySelector(".hero-image img");
-const heroImageWrap = document.querySelector(".hero-image");
+const modal = document.getElementById("projectModal");
+const modalTitle = document.getElementById("modalTitle");
+const modalCategory = document.getElementById("modalCategory");
+const modalLink = document.getElementById("modalLink");
+const closeModal = document.querySelector(".close-modal");
+const cards = document.querySelectorAll(".project-card");
 
-function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
-
-let rafPending = false;
-
-function onScroll() {
-    if (!isMobile()) {
-        heroParallax();
-    }
-    updateNavbar();
-    updateProgress();
-}
-
-function heroParallax() {
-    if (!heroContent || !heroImageEl) return;
-    const scrollY = window.scrollY;
-    const vh = window.innerHeight;
-    const progress = Math.min(1, scrollY / (vh * 0.75));
-    const ep = easeOut(progress);
-
-    // Content: elegant fade up (Apple style — subtle, not dramatic)
-    heroContent.style.opacity    = `${1 - ep * 0.9}`;
-    heroContent.style.transform  = `translateY(${-ep * 50}px)`;
-
-    // Image: slow parallax down + gentle scale
-    heroImageEl.style.transform = `translateY(${scrollY * 0.12}px) scale(${1 - progress * 0.08})`;
-    heroImageEl.style.opacity   = `${1 - progress * 0.5}`;
-}
-
-window.addEventListener("scroll", () => {
-    if (!rafPending) {
-        requestAnimationFrame(() => {
-            onScroll();
-            rafPending = false;
-        });
-        rafPending = true;
-    }
-}, { passive: true });
-
-/* ========================= */
-/* CHANGE 6: 3D MOUSE GLOW   */
-/* Netflix cinematic effect  */
-/* ========================= */
-
-const heroSection = document.querySelector(".hero");
-
-if (heroSection && !isMobile()) {
-    heroSection.addEventListener("mousemove", (e) => {
-        if (!heroImageWrap) return;
-        const rect = heroSection.getBoundingClientRect();
-        const x = (e.clientX - rect.left) / rect.width;
-        const y = (e.clientY - rect.top)  / rect.height;
-
-        const rotateY =  (x - 0.5) * 14;
-        const rotateX = -(y - 0.5) * 10;
-
-        heroImageEl.style.transform =
-            `perspective(1200px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
-
-        // Move the glow pseudo-element via CSS custom properties
-        heroImageWrap.style.setProperty('--gx', `${x * 100}%`);
-        heroImageWrap.style.setProperty('--gy', `${y * 100}%`);
-    });
-
-    heroSection.addEventListener("mouseleave", () => {
-        if (!heroImageEl) return;
-        heroImageEl.style.transition = "transform 0.8s cubic-bezier(0.22,1,0.36,1), opacity 0.5s ease";
-        heroImageEl.style.transform = "perspective(1200px) rotateX(0deg) rotateY(0deg) scale(1)";
-        setTimeout(() => {
-            if (heroImageEl) heroImageEl.style.transition = "";
-        }, 800);
-    });
-}
-
-/* ========================= */
-/* MODAL                     */
-/* ========================= */
-
-const modal       = document.getElementById("projectModal");
-const modalTitle  = document.getElementById("modalTitle");
-const modalCat    = document.getElementById("modalCategory");
-const modalLink   = document.getElementById("modalLink");
-const closeModal  = document.querySelector(".close-modal");
-
-document.querySelectorAll(".project-card").forEach(card => {
+cards.forEach(card => {
     card.addEventListener("click", () => {
-        if (modalTitle) modalTitle.textContent  = card.dataset.title    || "Project";
-        if (modalCat)   modalCat.textContent    = card.dataset.category || "Creative Content";
-        if (modalLink)  modalLink.href          = card.dataset.link     || "#";
-        if (modal)      modal.style.display     = "flex";
+        modalTitle.textContent = card.dataset.title || "Project";
+        modalCategory.textContent = card.dataset.category || "Creative Content";
+        modalLink.href = card.dataset.link || "#";
+        modal.style.display = "flex";
         document.body.style.overflow = "hidden";
     });
 });
 
-function closeModalFn() {
-    if (modal) modal.style.display = "none";
-    document.body.style.overflow = "auto";
+if (closeModal) {
+    closeModal.addEventListener("click", () => {
+        modal.style.display = "none";
+        document.body.style.overflow = "auto";
+    });
 }
 
-if (closeModal) closeModal.addEventListener("click", closeModalFn);
-window.addEventListener("click", e => { if (e.target === modal) closeModalFn(); });
-document.addEventListener("keydown", e => { if (e.key === "Escape") closeModalFn(); });
+window.addEventListener("click", (e) => {
+    if (e.target === modal) {
+        modal.style.display = "none";
+        document.body.style.overflow = "auto";
+    }
+});
+
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && modal.style.display === "flex") {
+        modal.style.display = "none";
+        document.body.style.overflow = "auto";
+    }
+});
 
 /* ========================= */
-/* HAMBURGER MENU            */
+/* HAMBURGER MENU */
 /* ========================= */
 
 const hamburger = document.getElementById("hamburger");
-const navMenu   = document.querySelector("nav");
+const navMenu = document.querySelector("nav");
 
-if (hamburger && navMenu) {
-    hamburger.addEventListener("click", () => {
-        hamburger.classList.toggle("open");
-        navMenu.classList.toggle("open");
-        document.body.style.overflow = navMenu.classList.contains("open") ? "hidden" : "";
+hamburger.addEventListener("click", () => {
+    hamburger.classList.toggle("open");
+    navMenu.classList.toggle("open");
+});
+
+navMenu.querySelectorAll("a").forEach(link => {
+    link.addEventListener("click", () => {
+        hamburger.classList.remove("open");
+        navMenu.classList.remove("open");
+    });
+});
+
+/* ========================= */
+/* SKILLS ANIMATION */
+/* ========================= */
+
+const skillFills = document.querySelectorAll(".skill-fill");
+const skillObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            skillFills.forEach(fill => {
+                fill.style.width = fill.getAttribute("data-width") + "%";
+            });
+        }
+    });
+}, { threshold: 0.3 });
+const skillsSection = document.querySelector(".skills-section");
+if (skillsSection) skillObserver.observe(skillsSection);
+
+/* ========================= */
+/* SCROLL PROGRESS BAR */
+/* ========================= */
+
+const progressBar = document.getElementById("progress-bar");
+window.addEventListener("scroll", () => {
+    const scrolled = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+    progressBar.style.width = scrolled + "%";
+});
+
+/* =========================================== */
+/* APPLE-STYLE SCROLL-DRIVEN ANIMATIONS        */
+/* Everything below is tied to scroll position */
+/* =========================================== */
+
+/* Helper: get how far an element is through the viewport (0 → 1) */
+function getScrollProgress(el, start = 0.15, end = 0.85) {
+    const rect = el.getBoundingClientRect();
+    const vh = window.innerHeight;
+    const raw = 1 - (rect.top / (vh * end));
+    return Math.min(1, Math.max(0, raw));
+}
+
+/* ── 1. HERO SECTION ── cinematic scroll-out */
+const heroContent = document.querySelector(".hero-content");
+const heroImage   = document.querySelector(".hero-image img");
+const heroTag     = document.querySelector(".hero-tag");
+const heroH1      = document.querySelector(".hero h1");
+const heroH2      = document.querySelector(".hero h2");
+const heroP       = document.querySelector(".hero p");
+const heroBtns    = document.querySelector(".hero-buttons");
+
+/* ── 2. STATS — stagger in from below */
+const statCards = document.querySelectorAll(".stat");
+
+/* ── 3. SECTION HEADERS — slide-in from left */
+const sectionHeaders = document.querySelectorAll(".section-header h2");
+
+/* ── 4. PROJECT CARDS — staggered cascade */
+const projectCards = document.querySelectorAll(".project-card");
+
+/* ── 5. EPISODE CARDS — slide from left */
+const episodeCards = document.querySelectorAll(".episode-card");
+
+/* ── 6. STACK PILLS — pop in */
+const stackPills = document.querySelectorAll(".stack-grid span");
+
+/* ── 7. ACHIEVEMENT CARDS — scale in */
+const achievementCards = document.querySelectorAll(".achievement-card");
+
+/* ── 8. ABOUT TEXT — word-level reveal */
+const aboutParagraph = document.querySelector(".about p");
+
+/* ── 9. CONTACT — dramatic zoom */
+const contactSection = document.querySelector(".contact-section");
+const contactH2      = document.querySelector(".contact-section h2");
+const contactBtns    = document.querySelector(".contact-buttons");
+
+/* ========================= */
+/* INITIAL STATE SETUP       */
+/* ========================= */
+
+function initScrollStates() {
+    /* Hero elements — set will-change for GPU compositing */
+    [heroTag, heroH1, heroH2, heroP, heroBtns].forEach(el => {
+        if (el) el.style.willChange = "opacity, transform";
+    });
+    if (heroImage) heroImage.style.willChange = "transform, opacity";
+
+    /* Stat cards */
+    statCards.forEach((el, i) => {
+        el.style.opacity = "0";
+        el.style.transform = `translateY(60px)`;
+        el.style.transition = "none";
+        el.style.willChange = "opacity, transform";
     });
 
-    navMenu.querySelectorAll("a").forEach(link => {
-        link.addEventListener("click", () => {
-            hamburger.classList.remove("open");
-            navMenu.classList.remove("open");
-            document.body.style.overflow = "";
-        });
+    /* Section headers */
+    sectionHeaders.forEach(el => {
+        el.style.opacity = "0";
+        el.style.transform = "translateX(-60px)";
+        el.style.willChange = "opacity, transform";
     });
+
+    /* Project cards */
+    projectCards.forEach((el, i) => {
+        el.style.opacity = "0";
+        el.style.transform = "translateY(50px) scale(0.92)";
+        el.style.willChange = "opacity, transform";
+    });
+
+    /* Episode cards */
+    episodeCards.forEach(el => {
+        el.style.opacity = "0";
+        el.style.transform = "translateX(-80px)";
+        el.style.willChange = "opacity, transform";
+    });
+
+    /* Stack pills */
+    stackPills.forEach(el => {
+        el.style.opacity = "0";
+        el.style.transform = "scale(0.6) translateY(20px)";
+        el.style.willChange = "opacity, transform";
+    });
+
+    /* Achievement cards */
+    achievementCards.forEach(el => {
+        el.style.opacity = "0";
+        el.style.transform = "scale(0.8) translateY(30px)";
+        el.style.willChange = "opacity, transform";
+    });
+
+    /* About paragraph */
+    if (aboutParagraph) {
+        aboutParagraph.style.opacity = "0";
+        aboutParagraph.style.transform = "translateY(30px)";
+        aboutParagraph.style.willChange = "opacity, transform";
+    }
+
+    /* Contact */
+    if (contactH2) {
+        contactH2.style.opacity = "0";
+        contactH2.style.transform = "scale(0.85) translateY(40px)";
+        contactH2.style.willChange = "opacity, transform";
+    }
+    if (contactBtns) {
+        contactBtns.style.opacity = "0";
+        contactBtns.style.transform = "translateY(30px)";
+        contactBtns.style.willChange = "opacity, transform";
+    }
 }
 
 /* ========================= */
-/* SMOOTH ANCHOR SCROLL      */
+/* EASING FUNCTIONS          */
+/* ========================= */
+
+function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
+function easeInOut(t) { return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2, 3)/2; }
+
+/* ========================= */
+/* SCROLL ANIMATION ENGINE   */
+/* ========================= */
+
+const triggered = new Set(); // one-shot animations
+
+function onScroll() {
+    const scrollY = window.scrollY;
+    const vh = window.innerHeight;
+
+    /* ── HERO: scroll-out parallax as user scrolls down ── */
+    if (heroContent && heroImage) {
+        const heroProgress = Math.min(1, scrollY / (vh * 0.7));
+        const ep = easeInOut(heroProgress);
+
+        /* Content floats up and fades */
+        if (heroContent) {
+            heroContent.style.opacity    = `${1 - ep * 1.2}`;
+            heroContent.style.transform  = `translateY(${-ep * 80}px)`;
+        }
+
+        /* Individual hero children stagger on scroll-out */
+        const heroChildren = [heroTag, heroH1, heroH2, heroP, heroBtns];
+        heroChildren.forEach((el, i) => {
+            if (!el) return;
+            const delay = i * 0.06;
+            const localP = Math.max(0, ep - delay);
+            el.style.opacity   = `${1 - localP * 2}`;
+            el.style.transform = `translateY(${-localP * 60}px)`;
+        });
+
+        /* Profile image — slower parallax + slight scale */
+        heroImage.style.transform = `translateY(${scrollY * 0.12}px) scale(${1 - heroProgress * 0.08})`;
+        heroImage.style.opacity   = `${1 - heroProgress * 0.6}`;
+    }
+
+    /* ── STAT CARDS: stagger in from bottom ── */
+    statCards.forEach((el, i) => {
+        if (triggered.has(el)) return;
+        const rect = el.getBoundingClientRect();
+        if (rect.top < vh * 0.88) {
+            const delay = i * 90;
+            setTimeout(() => {
+                el.style.transition = "opacity 0.7s cubic-bezier(.22,1,.36,1), transform 0.7s cubic-bezier(.22,1,.36,1)";
+                el.style.opacity   = "1";
+                el.style.transform = "translateY(0)";
+            }, delay);
+            triggered.add(el);
+        }
+    });
+
+    /* ── SECTION HEADERS: slide in from left ── */
+    sectionHeaders.forEach(el => {
+        if (triggered.has(el)) return;
+        const rect = el.getBoundingClientRect();
+        if (rect.top < vh * 0.85) {
+            el.style.transition = "opacity 0.8s cubic-bezier(.22,1,.36,1), transform 0.8s cubic-bezier(.22,1,.36,1)";
+            el.style.opacity   = "1";
+            el.style.transform = "translateX(0)";
+            triggered.add(el);
+        }
+    });
+
+    /* ── PROJECT CARDS: cascade in ── */
+    projectCards.forEach((el, i) => {
+        if (triggered.has(el)) return;
+        const rect = el.getBoundingClientRect();
+        if (rect.left < window.innerWidth * 1.1 && rect.top < vh * 0.92) {
+            const delay = (i % 3) * 100;
+            setTimeout(() => {
+                el.style.transition = "opacity 0.65s cubic-bezier(.22,1,.36,1), transform 0.65s cubic-bezier(.22,1,.36,1)";
+                el.style.opacity   = "1";
+                el.style.transform = "translateY(0) scale(1)";
+            }, delay);
+            triggered.add(el);
+        }
+    });
+
+    /* ── EPISODE CARDS: slide in from left with stagger ── */
+    episodeCards.forEach((el, i) => {
+        if (triggered.has(el)) return;
+        const rect = el.getBoundingClientRect();
+        if (rect.top < vh * 0.85) {
+            setTimeout(() => {
+                el.style.transition = "opacity 0.8s cubic-bezier(.22,1,.36,1), transform 0.8s cubic-bezier(.22,1,.36,1)";
+                el.style.opacity   = "1";
+                el.style.transform = "translateX(0)";
+            }, i * 130);
+            triggered.add(el);
+        }
+    });
+
+    /* ── STACK PILLS: pop in with stagger ── */
+    stackPills.forEach((el, i) => {
+        if (triggered.has(el)) return;
+        const rect = el.getBoundingClientRect();
+        if (rect.top < vh * 0.9) {
+            setTimeout(() => {
+                el.style.transition = "opacity 0.5s cubic-bezier(.34,1.56,.64,1), transform 0.5s cubic-bezier(.34,1.56,.64,1)";
+                el.style.opacity   = "1";
+                el.style.transform = "scale(1) translateY(0)";
+            }, i * 60);
+            triggered.add(el);
+        }
+    });
+
+    /* ── ACHIEVEMENT CARDS: scale up ── */
+    achievementCards.forEach((el, i) => {
+        if (triggered.has(el)) return;
+        const rect = el.getBoundingClientRect();
+        if (rect.top < vh * 0.88) {
+            setTimeout(() => {
+                el.style.transition = "opacity 0.7s cubic-bezier(.34,1.2,.64,1), transform 0.7s cubic-bezier(.34,1.2,.64,1)";
+                el.style.opacity   = "1";
+                el.style.transform = "scale(1) translateY(0)";
+            }, i * 150);
+            triggered.add(el);
+        }
+    });
+
+    /* ── ABOUT PARAGRAPH ── */
+    if (aboutParagraph && !triggered.has(aboutParagraph)) {
+        const rect = aboutParagraph.getBoundingClientRect();
+        if (rect.top < vh * 0.85) {
+            aboutParagraph.style.transition = "opacity 1s ease, transform 1s ease";
+            aboutParagraph.style.opacity    = "1";
+            aboutParagraph.style.transform  = "translateY(0)";
+            triggered.add(aboutParagraph);
+        }
+    }
+
+    /* ── CONTACT SECTION: dramatic zoom-in ── */
+    if (contactH2 && !triggered.has(contactH2)) {
+        const rect = contactH2.getBoundingClientRect();
+        if (rect.top < vh * 0.85) {
+            contactH2.style.transition = "opacity 1s cubic-bezier(.22,1,.36,1), transform 1s cubic-bezier(.22,1,.36,1)";
+            contactH2.style.opacity    = "1";
+            contactH2.style.transform  = "scale(1) translateY(0)";
+            triggered.add(contactH2);
+
+            if (contactBtns) {
+                setTimeout(() => {
+                    contactBtns.style.transition = "opacity 0.8s ease, transform 0.8s ease";
+                    contactBtns.style.opacity    = "1";
+                    contactBtns.style.transform  = "translateY(0)";
+                }, 300);
+            }
+        }
+    }
+}
+
+/* ========================= */
+/* SMOOTH SECTION SCROLL     */
 /* ========================= */
 
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener("click", function(e) {
+    anchor.addEventListener("click", function (e) {
         const target = document.querySelector(this.getAttribute("href"));
         if (target) {
             e.preventDefault();
-            const offset = navbar ? navbar.offsetHeight + 20 : 80;
-            const top = target.getBoundingClientRect().top + window.scrollY - offset;
-            window.scrollTo({ top, behavior: "smooth" });
+            target.scrollIntoView({ behavior: "smooth", block: "start" });
         }
+    });
+});
+
+/* ========================= */
+/* CARD HOVER DEPTH (3D)     */
+/* ========================= */
+
+cards.forEach(card => {
+    card.addEventListener("mousemove", (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const rotateY = ((x / rect.width) - 0.5) * 8;
+        const rotateX = ((y / rect.height) - 0.5) * -8;
+        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
+    });
+    card.addEventListener("mouseleave", () => {
+        card.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)";
     });
 });
 
@@ -325,40 +472,46 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 /* ========================= */
 
 const seasonCards = document.querySelectorAll(".season-card");
-if (seasonCards.length) {
-    const floatStyle = document.createElement("style");
-    floatStyle.textContent = `
-        @keyframes floatCard {
-          0%,100% { transform: translateY(0); }
-          50%      { transform: translateY(-6px); }
-        }
-    `;
-    document.head.appendChild(floatStyle);
-    seasonCards.forEach((card, i) => {
-        card.style.animation = `floatCard 4s ease-in-out ${i * 0.3}s infinite`;
-    });
+seasonCards.forEach((card, index) => {
+    card.style.animation = `floatCard 4s ease-in-out ${index * 0.3}s infinite`;
+});
+
+const floatStyle = document.createElement("style");
+floatStyle.innerHTML = `
+@keyframes floatCard {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
 }
+`;
+document.head.appendChild(floatStyle);
 
 /* ========================= */
-/* MOBILE: ensure revealed   */
+/* PERFORMANCE               */
 /* ========================= */
 
-if (isMobile()) {
-    // On mobile all elements should be visible — override any leftover opacity:0
-    document.querySelectorAll(
-        ".stat, .section-header h2, .section-label, .project-card, " +
-        ".episode-card, .stack-grid span, .achievement-card, " +
-        ".skill-item, .about h2, .about p, " +
-        ".contact-section h2, .contact-section p, .contact-buttons"
-    ).forEach(el => {
-        el.classList.add("revealed");
-        // trigger skill bars too
-        if (el.classList.contains("skill-item")) {
-            const fill = el.querySelector(".skill-fill");
-            if (fill) fill.style.width = fill.getAttribute("data-width") + "%";
-        }
-    });
+window.addEventListener("pageshow", () => {
+    document.body.classList.add("loaded");
+});
 
-    // Run counters immediately on mobile
-    runCounters();
-}
+/* ========================= */
+/* INIT + RAF LOOP           */
+/* ========================= */
+
+initScrollStates();
+
+/* Run immediately once so above-fold elements render correctly */
+window.addEventListener("DOMContentLoaded", () => {
+    onScroll();
+});
+
+/* Passive scroll listener for performance */
+let ticking = false;
+window.addEventListener("scroll", () => {
+    if (!ticking) {
+        requestAnimationFrame(() => {
+            onScroll();
+            ticking = false;
+        });
+        ticking = true;
+    }
+}, { passive: true });
