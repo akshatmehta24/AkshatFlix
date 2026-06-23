@@ -1025,13 +1025,14 @@ footer {
 .stack-grid span {
   display: inline-flex;
   padding: 10px 20px;
-  background: transparent;
-  border: none;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.12);
   border-radius: 999px;
   font-size: 0.9rem;
   color: #fff;
   transition: 0.3s;
 }
+
 
 }
 
