@@ -741,23 +741,59 @@ nav a:hover { color: var(--red); }
 .contact-section {
   text-align: center;
   padding: 140px 8%;
+  background: radial-gradient(ellipse at center, rgba(229,9,20,0.15) 0%, transparent 70%);
+}
+
+.contact-section::before {
+  content: 'GET IN TOUCH';
+  display: block;
+  font-size: 0.75rem;
+  letter-spacing: 4px;
+  color: var(--red);
+  margin-bottom: 20px;
 }
 
 .contact-section h2 {
   font-size: 3rem;
   margin-bottom: 20px;
+  line-height: 1.2;
+}
+
+.contact-section h2 span {
+  color: var(--red);
 }
 
 .contact-section p {
   color: var(--text-secondary);
   margin-bottom: 40px;
+  font-size: 1.1rem;
 }
 
 .contact-buttons {
   display: flex;
-  justify-content: center;
-  gap: 20px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.contact-buttons .btn-primary {
+  width: 100%;
+  max-width: 380px;
+  text-align: center;
+  padding: 18px 28px;
+  border-radius: 16px;
+  font-size: 1rem;
+}
+
+.contact-buttons .btn-secondary {
+  width: 100%;
+  max-width: 280px;
+  text-align: center;
+  padding: 18px 28px;
+  border-radius: 16px;
+  font-size: 1rem;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
 }
 
 /* ========================= */
