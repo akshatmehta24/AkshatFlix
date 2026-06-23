@@ -966,3 +966,14 @@ footer {
   .hero {
     overflow: visible;
   }
+
+@media (max-width: 768px) {
+  .stack-grid {
+    gap: 10px;
+  }
+
+  .stack-grid span {
+    padding: 8px 16px;
+    font-size: 0.85rem;
+  }
+}
