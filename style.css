@@ -1048,3 +1048,71 @@ footer {
   pointer-events: none;
   z-index: 0;
 }
+
+/* ========================= */
+/* MAGNETIC CURSOR           */
+/* ========================= */
+
+* { cursor: none !important; }
+
+#cursor-dot {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  background: #E50914;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 999999;
+  transform: translate(-50%, -50%);
+  transition: width 0.2s ease, height 0.2s ease, background 0.2s ease;
+  box-shadow: 0 0 10px rgba(229,9,20,0.8), 0 0 20px rgba(229,9,20,0.4);
+  will-change: transform;
+}
+
+#cursor-ring {
+  position: fixed;
+  width: 36px;
+  height: 36px;
+  border: 1.5px solid rgba(229,9,20,0.6);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 999998;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s ease, height 0.3s ease, border-color 0.3s ease, background 0.3s ease;
+  will-change: transform;
+}
+
+/* State: hovering a button */
+body.cursor-hover #cursor-dot {
+  width: 12px;
+  height: 12px;
+  background: #ffffff;
+  box-shadow: 0 0 15px rgba(255,255,255,0.6);
+}
+
+body.cursor-hover #cursor-ring {
+  width: 52px;
+  height: 52px;
+  border-color: rgba(229,9,20,1);
+  background: rgba(229,9,20,0.08);
+}
+
+/* State: hovering a project card */
+body.cursor-card #cursor-dot {
+  width: 6px;
+  height: 6px;
+  background: #ffffff;
+}
+
+body.cursor-card #cursor-ring {
+  width: 64px;
+  height: 64px;
+  border-color: rgba(255,255,255,0.5);
+  background: rgba(229,9,20,0.05);
+}
+
+/* Hide on mobile */
+@media (max-width: 768px) {
+  * { cursor: auto !important; }
+  #cursor-dot, #cursor-ring { display: none; }
+}
