@@ -1116,3 +1116,99 @@ body.cursor-card #cursor-ring {
   * { cursor: auto !important; }
   #cursor-dot, #cursor-ring { display: none; }
 }
+/* ========================= */
+/* HORIZONTAL SCROLL SECTIONS */
+/* ========================= */
+
+.h-scroll-outer {
+  position: relative;
+  /* height is set by JS based on card count */
+}
+
+.h-scroll-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 8%;
+}
+
+.h-scroll-sticky .section-header {
+  margin-bottom: 30px;
+  flex-shrink: 0;
+}
+
+.h-scroll-track {
+  display: flex;
+  gap: 22px;
+  will-change: transform;
+  width: max-content;
+}
+
+.h-scroll-track .project-card {
+  min-width: 380px;
+  height: 220px;
+  flex-shrink: 0;
+}
+
+/* Progress dots */
+.h-scroll-dots {
+  display: flex;
+  gap: 8px;
+  margin-top: 24px;
+  flex-shrink: 0;
+}
+
+.h-scroll-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.h-scroll-dot.active {
+  background: #E50914;
+  transform: scale(1.4);
+  box-shadow: 0 0 8px rgba(229,9,20,0.7);
+}
+
+/* Scroll hint label */
+.h-scroll-hint {
+  font-size: 0.7rem;
+  letter-spacing: 3px;
+  color: rgba(255,255,255,0.25);
+  margin-top: 16px;
+  flex-shrink: 0;
+  animation: hintPulse 2s ease infinite;
+}
+
+@keyframes hintPulse {
+  0%, 100% { opacity: 0.25; }
+  50%       { opacity: 0.6;  }
+}
+
+/* Mobile — revert to normal horizontal swipe */
+@media (max-width: 768px) {
+  .h-scroll-outer {
+    height: auto !important;
+  }
+  .h-scroll-sticky {
+    position: relative;
+    height: auto;
+    padding: 40px 8%;
+  }
+  .h-scroll-track {
+    overflow-x: auto;
+    width: 100%;
+    padding-bottom: 16px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .h-scroll-dots,
+  .h-scroll-hint {
+    display: none;
+  }
+}
