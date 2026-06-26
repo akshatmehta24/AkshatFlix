@@ -515,3 +515,128 @@ window.addEventListener("scroll", () => {
         ticking = true;
     }
 }, { passive: true });
+
+/* ========================= */
+/* PARTICLE BACKGROUND       */
+/* ========================= */
+
+(function () {
+  const canvas = document.getElementById('particle-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, mouse = { x: -9999, y: -9999 };
+  const PARTICLE_COUNT = 120;
+  const particles = [];
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+
+  class Particle {
+    constructor() { this.reset(true); }
+    reset(random) {
+      this.x  = random ? Math.random() * W : (Math.random() < 0.5 ? -10 : W + 10);
+      this.y  = Math.random() * H;
+      this.vx = (Math.random() - 0.5) * 0.5;
+      this.vy = (Math.random() - 0.5) * 0.5;
+      this.size = Math.random() * 2.2 + 0.5;
+      const roll = Math.random();
+      this.color = roll < 0.35 ? '#E50914'
+                 : roll < 0.55 ? '#ff3b45'
+                 : roll < 0.70 ? '#ff6b6b'
+                 : '#ffffff';
+      this.baseAlpha = Math.random() * 0.6 + 0.15;
+      this.alpha = this.baseAlpha;
+      this.life = 1;
+      this.decay = Math.random() * 0.0008 + 0.0002;
+    }
+    update() {
+      const dx = this.x - mouse.x;
+      const dy = this.y - mouse.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const influence = 140;
+      if (dist < influence && dist > 0) {
+        const force = (influence - dist) / influence;
+        const angle = Math.atan2(dy, dx);
+        this.vx += Math.cos(angle) * force * 0.18;
+        this.vy += Math.sin(angle) * force * 0.18;
+        this.alpha = Math.min(1, this.baseAlpha + force * 0.7);
+      } else {
+        this.alpha += (this.baseAlpha - this.alpha) * 0.04;
+      }
+      this.vx *= 0.97;
+      this.vy *= 0.97;
+      this.x += this.vx;
+      this.y += this.vy;
+      this.life -= this.decay;
+      if (this.x < -20 || this.x > W + 20 ||
+          this.y < -20 || this.y > H + 20 || this.life <= 0) {
+        this.reset(false);
+      }
+    }
+    draw() {
+      ctx.save();
+      ctx.globalAlpha = this.alpha * this.life;
+      if (this.color !== '#ffffff') {
+        ctx.shadowColor = this.color;
+        ctx.shadowBlur = this.size * 4;
+      }
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fillStyle = this.color;
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  function initParticles() {
+    particles.length = 0;
+    for (let i = 0; i < PARTICLE_COUNT; i++) particles.push(new Particle());
+  }
+
+  function drawConnections() {
+    const maxDist = 90;
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const d  = Math.sqrt(dx * dx + dy * dy);
+        if (d < maxDist) {
+          const opacity = (1 - d / maxDist) * 0.12;
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(229,9,20,${opacity})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+  }
+
+  function loop() {
+    ctx.clearRect(0, 0, W, H);
+
+    if (mouse.x > 0) {
+      const grd = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 200);
+      grd.addColorStop(0, 'rgba(229,9,20,0.07)');
+      grd.addColorStop(1, 'rgba(229,9,20,0)');
+      ctx.fillStyle = grd;
+      ctx.beginPath();
+      ctx.arc(mouse.x, mouse.y, 200, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    drawConnections();
+    particles.forEach(p => { p.update(); p.draw(); });
+    requestAnimationFrame(loop);
+  }
+
+  resize();
+  initParticles();
+  loop();
+
+  window.addEventListener('resize', () => { resize(); initParticles(); });
+  window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; }, { passive: true });
+  window.addEventListener('mouseleave', () => { mouse.x = -9999; mouse.y = -9999; });
+})();
