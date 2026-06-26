@@ -640,3 +640,112 @@ window.addEventListener("scroll", () => {
   window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; }, { passive: true });
   window.addEventListener('mouseleave', () => { mouse.x = -9999; mouse.y = -9999; });
 })();
+
+/* ========================= */
+/* MAGNETIC CURSOR           */
+/* ========================= */
+
+(function () {
+  const dot  = document.getElementById('cursor-dot');
+  const ring = document.getElementById('cursor-ring');
+
+  if (!dot || !ring) return;
+
+  // Skip on touch devices
+  if (window.matchMedia('(hover: none)').matches) return;
+
+  let mouseX = window.innerWidth / 2;
+  let mouseY = window.innerHeight / 2;
+  let ringX  = mouseX;
+  let ringY  = mouseY;
+  let dotX   = mouseX;
+  let dotY   = mouseY;
+
+  // Track raw mouse position
+  window.addEventListener('mousemove', e => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+  }, { passive: true });
+
+  // Smooth animation loop
+  function animateCursor() {
+    // Dot follows tightly
+    dotX += (mouseX - dotX) * 0.18;
+    dotY += (mouseY - dotY) * 0.18;
+
+    // Ring follows with more lag
+    ringX += (mouseX - ringX) * 0.10;
+    ringY += (mouseY - ringY) * 0.10;
+
+    dot.style.left  = dotX + 'px';
+    dot.style.top   = dotY + 'px';
+    ring.style.left = ringX + 'px';
+    ring.style.top  = ringY + 'px';
+
+    requestAnimationFrame(animateCursor);
+  }
+  animateCursor();
+
+  // ── MAGNETIC PULL on buttons ──
+  const magnetTargets = document.querySelectorAll(
+    '.btn-primary, .btn-secondary, .hamburger, nav a'
+  );
+
+  magnetTargets.forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      document.body.classList.add('cursor-hover');
+    });
+
+    el.addEventListener('mousemove', e => {
+      const rect   = el.getBoundingClientRect();
+      const elCX   = rect.left + rect.width  / 2;
+      const elCY   = rect.top  + rect.height / 2;
+      const dx     = e.clientX - elCX;
+      const dy     = e.clientY - elCY;
+
+      // Pull element toward cursor slightly
+      el.style.transform    = `translate(${dx * 0.25}px, ${dy * 0.25}px)`;
+      el.style.transition   = 'transform 0.15s ease';
+
+      // Pull cursor dot toward element center
+      mouseX = elCX + dx * 0.6;
+      mouseY = elCY + dy * 0.6;
+    });
+
+    el.addEventListener('mouseleave', () => {
+      document.body.classList.remove('cursor-hover');
+      // Snap element back
+      el.style.transform  = 'translate(0, 0)';
+      el.style.transition = 'transform 0.4s cubic-bezier(.22,1,.36,1)';
+    });
+  });
+
+  // ── CARD hover state ──
+  document.querySelectorAll('.project-card').forEach(card => {
+    card.addEventListener('mouseenter', () => {
+      document.body.classList.add('cursor-card');
+    });
+    card.addEventListener('mouseleave', () => {
+      document.body.classList.remove('cursor-card');
+    });
+  });
+
+  // ── Hide cursor when leaving window ──
+  document.addEventListener('mouseleave', () => {
+    dot.style.opacity  = '0';
+    ring.style.opacity = '0';
+  });
+  document.addEventListener('mouseenter', () => {
+    dot.style.opacity  = '1';
+    ring.style.opacity = '1';
+  });
+
+  // ── Click pulse effect ──
+  window.addEventListener('mousedown', () => {
+    ring.style.transform = 'translate(-50%, -50%) scale(0.75)';
+  });
+  window.addEventListener('mouseup', () => {
+    ring.style.transform = 'translate(-50%, -50%) scale(1)';
+  });
+
+})();
