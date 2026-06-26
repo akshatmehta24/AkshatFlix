@@ -749,3 +749,60 @@ window.addEventListener("scroll", () => {
   });
 
 })();
+
+/* ========================= */
+/* HORIZONTAL SCROLL ENGINE  */
+/* ========================= */
+
+(function () {
+  if (window.matchMedia('(max-width: 768px)').matches) return;
+
+  const sections = [
+    { outer: 'trending',  track: 'track-trending',  dots: 'dots-trending'  },
+    { outer: 'ai',        track: 'track-ai',        dots: 'dots-ai'        },
+    { outer: 'marketing', track: 'track-marketing', dots: 'dots-marketing' },
+  ];
+
+  sections.forEach(({ outer, track, dots }) => {
+    const outerEl = document.getElementById(outer);
+    const trackEl = document.getElementById(track);
+    const dotsEl  = document.getElementById(dots);
+    if (!outerEl || !trackEl) return;
+
+    const dotEls = dotsEl ? dotsEl.querySelectorAll('.h-scroll-dot') : [];
+
+    // Total horizontal distance to travel
+    const totalScroll = trackEl.scrollWidth - window.innerWidth * 0.84;
+
+    // Give the outer element enough height so scrolling through it
+    // takes long enough to see all cards (1.5x multiplier feels natural)
+    const scrollHeight = window.innerHeight + totalScroll * 1.5;
+    outerEl.style.height = scrollHeight + 'px';
+
+    let currentX = 0;
+
+    function update() {
+      const rect     = outerEl.getBoundingClientRect();
+      const progress = Math.min(1, Math.max(0, -rect.top / (scrollHeight - window.innerHeight)));
+
+      const targetX  = -(progress * totalScroll);
+
+      // Smooth lerp
+      currentX += (targetX - currentX) * 0.12;
+
+      trackEl.style.transform = `translateX(${currentX}px)`;
+
+      // Update progress dots
+      if (dotEls.length) {
+        const cardIndex = Math.round(progress * (dotEls.length - 1));
+        dotEls.forEach((dot, i) => {
+          dot.classList.toggle('active', i === cardIndex);
+        });
+      }
+
+      requestAnimationFrame(update);
+    }
+
+    update();
+  });
+})();
