@@ -30,6 +30,7 @@ window.addEventListener("scroll", () => {
         navbar.style.boxShadow = "0 10px 30px rgba(0,0,0,.4)";
     } else {
         navbar.style.background = "transparent";
+        navbar.style.backdropFilter = "none";
         navbar.style.boxShadow = "none";
     }
 });
@@ -170,7 +171,7 @@ function getScrollProgress(el, start = 0.15, end = 0.85) {
 
 /* ── 1. HERO SECTION ── cinematic scroll-out */
 const heroContent = document.querySelector(".hero-content");
-const heroImage   = document.querySelector(".hero-image img");
+const heroImage   = document.querySelector(".hero-image");
 const heroTag     = document.querySelector(".hero-tag");
 const heroH1      = document.querySelector(".hero h1");
 const heroH2      = document.querySelector(".hero h2");
@@ -295,7 +296,7 @@ function onScroll() {
     const vh = window.innerHeight;
 
     /* ── HERO: scroll-out parallax as user scrolls down ── */
-    if (heroContent && heroImage) {
+    if (heroContent && heroImage && window.innerWidth > 1100) {
         const heroProgress = Math.min(1, scrollY / (vh * 0.7));
         const ep = easeInOut(heroProgress);
 
@@ -636,7 +637,11 @@ window.addEventListener("scroll", () => {
   initParticles();
   loop();
 
-  window.addEventListener('resize', () => { resize(); initParticles(); });
+  let lastW = window.innerWidth;
+  window.addEventListener('resize', () => {
+    resize();
+    if (window.innerWidth !== lastW) { lastW = window.innerWidth; initParticles(); }
+  });
   window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; }, { passive: true });
   window.addEventListener('mouseleave', () => { mouse.x = -9999; mouse.y = -9999; });
 })();
@@ -771,19 +776,27 @@ window.addEventListener("scroll", () => {
 
     const dotEls = dotsEl ? dotsEl.querySelectorAll('.h-scroll-dot') : [];
 
-    // Total horizontal distance to travel
-    const totalScroll = trackEl.scrollWidth - window.innerWidth * 0.84;
+    let totalScroll = 0;
+    let scrollHeight = window.innerHeight;
 
-    // Give the outer element enough height so scrolling through it
-    // takes long enough to see all cards (1.5x multiplier feels natural)
-    const scrollHeight = window.innerHeight + totalScroll * 1.5;
-    outerEl.style.height = scrollHeight + 'px';
+    // Work out how far the row needs to slide. If the cards already fit,
+    // there is nothing to scroll, so skip the extra height and the hints.
+    function measure() {
+      totalScroll  = Math.max(0, trackEl.scrollWidth - window.innerWidth * 0.84);
+      scrollHeight = window.innerHeight + totalScroll * 1.5;
+      outerEl.style.height = scrollHeight + 'px';
+      outerEl.classList.toggle('no-scroll', totalScroll === 0);
+    }
+    measure();
+    window.addEventListener('load', measure);
+    window.addEventListener('resize', measure);
 
     let currentX = 0;
 
     function update() {
+      const range    = scrollHeight - window.innerHeight;
       const rect     = outerEl.getBoundingClientRect();
-      const progress = Math.min(1, Math.max(0, -rect.top / (scrollHeight - window.innerHeight)));
+      const progress = range > 0 ? Math.min(1, Math.max(0, -rect.top / range)) : 0;
 
       const targetX  = -(progress * totalScroll);
 
@@ -805,4 +818,25 @@ window.addEventListener("scroll", () => {
 
     update();
   });
+})();
+
+/* ========================= */
+/* TIME AT CURRENT JOB       */
+/* ========================= */
+
+/* Keeps the "Now Playing" card up to date instead of a fixed "1y 8m" */
+(function () {
+  const text = document.getElementById('tenure-text');
+  const fill = document.getElementById('tenure-fill');
+  if (!text) return;
+
+  const start = new Date(2024, 9, 1); // Oct 2024
+  const now = new Date();
+  const months = Math.max(0, (now.getFullYear() - start.getFullYear()) * 12 + now.getMonth() - start.getMonth());
+  const y = Math.floor(months / 12);
+  const m = months % 12;
+  text.textContent = (y ? y + 'y ' : '') + m + 'm in';
+
+  // Bar fills over 3 years, capped so it always looks "still streaming"
+  if (fill) fill.style.width = Math.min(90, Math.round(months / 36 * 100)) + '%';
 })();
