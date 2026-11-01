@@ -315,6 +315,8 @@ nav a:hover { color: var(--red); }
   display: flex;
   justify-content: center;
   align-items: center;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .hero-image img {
@@ -743,7 +745,6 @@ nav a:hover { color: var(--red); }
   box-sizing: border-box;
   overflow: visible;
 }
-}
 
 .about p {
   line-height: 2;
@@ -875,8 +876,9 @@ footer {
 
 .close-modal {
   font-size: 2rem;
+  line-height: 1;
   cursor: pointer;
-  float: right;
+  align-self: flex-end;
 }
 
 /* ========================= */
@@ -1214,4 +1216,10 @@ body.cursor-card #cursor-ring {
   .h-scroll-hint {
     display: none;
   }
+}
+
+/* Hide "scroll to explore" hints when a row already fits on screen */
+.h-scroll-outer.no-scroll .h-scroll-dots,
+.h-scroll-outer.no-scroll .h-scroll-hint {
+  display: none;
 }

@@ -139,6 +139,7 @@ Creating content that educates, engages and delivers results across AI, E-Learni
     border-radius: 24px;
     padding: 32px 36px;
     width: 370px;
+    max-width: 100%;
     box-shadow: 0 0 40px rgba(229,9,20,0.15), 0 20px 60px rgba(0,0,0,0.6);
     animation: portraitFloat 6s ease infinite;
     position: relative;
@@ -180,7 +181,7 @@ Creating content that educates, engages and delivers results across AI, E-Learni
         border-radius: 999px;
         overflow: hidden;
       ">
-        <div style="
+        <div id="tenure-fill" style="
           width: 62%;
           height: 100%;
           background: #E50914;
@@ -189,7 +190,7 @@ Creating content that educates, engages and delivers results across AI, E-Learni
         "></div>
       </div>
       <div style="display:flex; justify-content:space-between; margin-top: 8px;">
-        <span style="font-size:0.72rem; color:#666;">1y 8m in</span>
+        <span id="tenure-text" style="font-size:0.72rem; color:#666;">1y 8m in</span>
         <span style="font-size:0.72rem; color:#666;">Still Streaming...</span>
       </div>
     </div>
@@ -608,7 +609,7 @@ Creating content that educates, engages and delivers results across AI, E-Learni
   </p>
 
   <img src="assets/profile.jpeg" alt="Akshat Mehta"
-       style="width:340px; height:420px; border-radius:20px; object-fit:cover; object-position:center top;
+       style="width:340px; max-width:100%; height:auto; aspect-ratio:340/420; border-radius:20px; object-fit:cover; object-position:center top;
               box-shadow: 0 10px 40px rgba(229,9,20,0.25); flex-shrink:0;">
 
 </div>
@@ -641,6 +642,7 @@ Let's Work Together
 
 <a href="https://www.linkedin.com/in/akshatm24"
 target="_blank"
+rel="noopener"
 class="btn-secondary">
 LinkedIn ↗
 </a>
@@ -682,6 +684,7 @@ LinkedIn ↗
 
 <a id="modalLink"
 target="_blank"
+rel="noopener"
 class="btn-primary">
 Watch Project
 </a>
