@@ -39,10 +39,25 @@ export const Lyrics: React.FC<{
   const words =
     line.words ??
     line.text.split(/\s+/).map((w, i, all) => ({ w, t: line.start + ((line.end - line.start) * 0.7 * i) / Math.max(1, all.length) }));
+  // Two lines with about the same number of letters (one line if it is short).
+  const indexed = words.map((w, i) => ({ w, i }));
+  let cut = indexed.length;
+  if (indexed.length >= 4) {
+    const total = words.reduce((n, w) => n + w.w.length, 0);
+    let best = Infinity;
+    let left = 0;
+    for (let k = 1; k < words.length; k++) {
+      left += words[k - 1].w.length;
+      const diff = Math.abs(total - 2 * left);
+      if (diff < best) {
+        best = diff;
+        cut = k;
+      }
+    }
+  }
+  const rows = [indexed.slice(0, cut), indexed.slice(cut)];
   const out = interpolate(t, [until - 0.4, until], [1, 0], clamp);
   const outBlur = interpolate(t, [until - 0.4, until], [0, 10], clamp);
-  const hiIn = interpolate(t, [line.start - 0.3, line.start + 0.4], [0, 1], clamp);
-  const enIn = interpolate(t, [line.start + (line.end - line.start) * 0.45, line.start + (line.end - line.start) * 0.45 + 0.5], [0, 1], clamp);
   return (
     <AbsoluteFill style={{ pointerEvents: "none" }}>
       {/* soft shade so text reads over any photo */}
@@ -68,25 +83,9 @@ export const Lyrics: React.FC<{
           filter: outBlur > 0.2 ? `blur(${outBlur}px)` : undefined,
         }}
       >
-        {line.hi && hiFont ? (
-          <div
-            style={{
-              fontFamily: hiFont,
-              fontSize: size * 1.45,
-              lineHeight: 1.25,
-              color: accent,
-              opacity: hiIn,
-              transform: `scale(${0.9 + 0.1 * hiIn})`,
-              filter: hiIn < 1 ? `blur(${(1 - hiIn) * 10}px)` : undefined,
-              textShadow: `0 0 30px ${glow}, 0 4px 16px rgba(0,0,0,0.6)`,
-              marginBottom: 6,
-            }}
-          >
-            {line.hi}
-          </div>
-        ) : null}
-        <div style={{ lineHeight: 1.25 }}>
-          {words.map((w, i) => {
+        {[rows[0], rows[1]].filter((r) => r.length).map((row, ri) => (
+        <div key={ri} style={{ lineHeight: 1.3, whiteSpace: "nowrap" }}>
+          {row.map(({ w, i }) => {
             const p = interpolate(t, [w.t - 0.05, w.t + 0.3], [0, 1], clamp);
             const nextT = words[i + 1]?.t ?? line.end;
             const active = t >= w.t && t < nextT;
@@ -110,23 +109,7 @@ export const Lyrics: React.FC<{
             );
           })}
         </div>
-        {line.en ? (
-          <div
-            style={{
-              fontFamily: enFont ?? font,
-              fontStyle: "italic",
-              fontSize: size * 0.66,
-              letterSpacing: 1,
-              color: "rgba(255,245,235,0.85)",
-              marginTop: 14,
-              opacity: enIn,
-              transform: `translateY(${(1 - enIn) * 10}px)`,
-              textShadow: "0 2px 10px rgba(0,0,0,0.7)",
-            }}
-          >
-            {line.en}
-          </div>
-        ) : null}
+        ))}
       </div>
     </AbsoluteFill>
   );

@@ -190,7 +190,7 @@ export const Template2: React.FC = () => {
         <Finale dur={T.total - finaleFrom} />
       </Sequence>
       <LightLeaks cuts={cuts} palette="warm" ambient={0.14} />
-      <Lyrics data={lyrics} font={HAND} hiFont={HINDI} enFont={SERIF} size={80} bottom={150} accent="#ffe2b0" />
+      <Lyrics data={lyrics} font={HAND} hiFont={HINDI} enFont={SERIF} size={88} bottom={170} accent="#ffe2b0" />
       <Dust />
     </AbsoluteFill>
   );

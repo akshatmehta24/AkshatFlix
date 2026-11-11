@@ -197,7 +197,7 @@ export const Template3: React.FC = () => {
       </Sequence>
       <Bokeh />
       <LightLeaks cuts={cuts} palette="rose" ambient={0.16} />
-      <Lyrics data={lyrics} font={SERIF} hiFont={HINDI} enFont={SERIF} size={68} bottom={120} accent="#ffd6ea" glow="rgba(255,150,210,0.6)" />
+      <Lyrics data={lyrics} font={SERIF} hiFont={HINDI} enFont={SERIF} size={80} bottom={150} accent="#ffd6ea" glow="rgba(255,150,210,0.6)" />
     </AbsoluteFill>
   );
 };
