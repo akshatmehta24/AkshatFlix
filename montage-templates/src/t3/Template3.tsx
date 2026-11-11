@@ -3,6 +3,7 @@ import { AbsoluteFill, Audio, Easing, Sequence, interpolate, random, staticFile,
 import { loadFont as loadParisienne } from "@remotion/google-fonts/Parisienne";
 import { loadFont as loadMontserrat } from "@remotion/google-fonts/Montserrat";
 import { loadFont as loadCormorant } from "@remotion/google-fonts/CormorantGaramond";
+import { loadFont as loadTiro } from "@remotion/google-fonts/TiroDevanagariHindi";
 import timing from "../timing/t3.json";
 import lyrics from "../lyrics/t3.json";
 import { DATE_DOTS, END_YEAR, FIRST, SECOND, Photo, PhotoInfo, START_YEAR, YEARS, clamp, makeTiming, photoAt } from "../shared";
@@ -12,6 +13,7 @@ import { Lyrics } from "../shared/lyrics";
 const { fontFamily: SCRIPT } = loadParisienne("normal", { weights: ["400"], subsets: ["latin"] });
 const { fontFamily: SANS } = loadMontserrat("normal", { weights: ["500"], subsets: ["latin"] });
 const { fontFamily: SERIF } = loadCormorant("italic", { weights: ["500"], subsets: ["latin"] });
+const { fontFamily: HINDI } = loadTiro("normal", { weights: ["400"], subsets: ["devanagari"] });
 
 const T = makeTiming(timing);
 export const T3_DURATION = T.total;
@@ -30,8 +32,8 @@ const Dreamy: React.FC<{ photo: PhotoInfo; dur: number; children?: React.ReactNo
 const FloatCard: React.FC<{ photo: PhotoInfo; dur: number; w?: number; h?: number; side?: number; filter?: string }> = ({
   photo,
   dur,
-  w = 860,
-  h = 1290,
+  w = 780,
+  h = 1170,
   side = 1,
   filter,
 }) => {
@@ -41,7 +43,7 @@ const FloatCard: React.FC<{ photo: PhotoInfo; dur: number; w?: number; h?: numbe
   const rx = Math.cos(p * Math.PI) * 3;
   const z = p * 90;
   return (
-    <AbsoluteFill style={{ perspective: 1800, alignItems: "center", justifyContent: "center" }}>
+    <AbsoluteFill style={{ perspective: 1800, alignItems: "center", justifyContent: "center", paddingBottom: 380 }}>
       <div
         style={{
           width: w,
@@ -63,12 +65,12 @@ const Collage: React.FC<{ photos: PhotoInfo[]; dur: number }> = ({ photos, dur }
   const f = useCurrentFrame();
   return (
     <AbsoluteFill style={{ perspective: 1800, alignItems: "center", justifyContent: "center" }}>
-      <div style={{ width: 900, height: 1340, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, transform: `rotateY(${interpolate(f, [0, dur], [-6, 6])}deg)` }}>
+      <div style={{ width: 780, height: 1160, marginBottom: 380, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, transform: `rotateY(${interpolate(f, [0, dur], [-6, 6])}deg)` }}>
         {photos.map((p, i) => {
           const r = interpolate(f, [i * 8, i * 8 + 20], [0, 1], { ...clamp, easing: Easing.out(Easing.cubic) });
           return (
             <div key={i} style={{ position: "relative", borderRadius: 30, overflow: "hidden", opacity: r, transform: `scale(${0.85 + 0.15 * r})`, filter: `blur(${(1 - r) * 12}px)`, border: "4px solid rgba(255,255,255,0.8)" }}>
-              <Photo photo={p} dur={dur} from={1.12} to={1.04} aspect={443 / 663} />
+              <Photo photo={p} dur={dur} from={1.12} to={1.04} aspect={383 / 573} />
             </div>
           );
         })}
@@ -127,10 +129,10 @@ const Intro: React.FC<{ dur: number }> = ({ dur }) => {
 const Ending: React.FC<{ dur: number; photo: PhotoInfo }> = ({ dur, photo }) => {
   const f = useCurrentFrame();
   const grow = interpolate(f, [0, 50], [0, 1], { ...clamp, easing: Easing.inOut(Easing.cubic) });
-  const text = interpolate(f, [44, 70], [0, 1], clamp);
+  const text = interpolate(f, [90, 118], [0, 1], clamp); // after the poem ends
   const out = interpolate(f, [dur - 36, dur], [1, 0], clamp);
-  const w = interpolate(grow, [0, 1], [860, 1080]);
-  const h = interpolate(grow, [0, 1], [1290, 1920]);
+  const w = interpolate(grow, [0, 1], [780, 1080]);
+  const h = interpolate(grow, [0, 1], [1170, 1920]);
   const r = interpolate(grow, [0, 1], [40, 0]);
   return (
     <Dreamy photo={photo} dur={dur}>
@@ -157,13 +159,17 @@ const SOFT = "saturate(1.05) contrast(1.02)";
 const SHOTS: { enter: Enter; render: (d: number) => React.ReactNode }[] = [
   { enter: "blur", render: (d) => <Dreamy photo={photoAt(0)} dur={d}><FloatCard photo={photoAt(0)} dur={d} filter="sepia(0.35)" /></Dreamy> },
   { enter: "zoom", render: (d) => <DoubleExposure base={photoAt(1)} over={photoAt(13)} dur={d} /> },
-  { enter: "blur", render: (d) => <Dreamy photo={photoAt(3)} dur={d}><FloatCard photo={photoAt(3)} dur={d} side={-1} filter={SOFT} /></Dreamy> },
-  { enter: "iris", render: (d) => <Diptych a={photoAt(4)} b={photoAt(5)} dur={d} bg="#24122c" filter={SOFT} /> },
-  { enter: "blur", render: (d) => <Dreamy photo={photoAt(6)} dur={d}><FloatCard photo={photoAt(6)} dur={d} filter={SOFT} /></Dreamy> },
-  { enter: "wipe", render: (d) => <Dreamy photo={photoAt(8)} dur={d}><ArchWindow photo={photoAt(8)} dur={d} left={150} top={300} w={780} h={1250} border="rgba(255,225,240,0.9)" filter={SOFT} /></Dreamy> },
-  { enter: "blur", render: (d) => <Dreamy photo={photoAt(9)} dur={d}><FloatCard photo={photoAt(9)} dur={d} side={-1} filter={SOFT} /></Dreamy> },
-  { enter: "zoom", render: (d) => <Dreamy photo={photoAt(11)} dur={d}><Collage photos={[photoAt(11), photoAt(12), photoAt(14), photoAt(15)]} dur={d} /></Dreamy> },
-  { enter: "blur", render: (d) => <Dreamy photo={photoAt(16)} dur={d}><FloatCard photo={photoAt(16)} dur={d} filter={SOFT} /></Dreamy> },
+  { enter: "blur", render: (d) => <Dreamy photo={photoAt(2)} dur={d}><FloatCard photo={photoAt(2)} dur={d} side={-1} filter={SOFT} /></Dreamy> },
+  { enter: "iris", render: (d) => <Diptych a={photoAt(3)} b={photoAt(4)} dur={d} bg="#24122c" filter={SOFT} /> },
+  { enter: "blur", render: (d) => <Dreamy photo={photoAt(5)} dur={d}><FloatCard photo={photoAt(5)} dur={d} filter={SOFT} /></Dreamy> },
+  { enter: "wipe", render: (d) => <Dreamy photo={photoAt(6)} dur={d}><ArchWindow photo={photoAt(6)} dur={d} left={190} top={170} w={700} h={1100} border="rgba(255,225,240,0.9)" filter={SOFT} /></Dreamy> },
+  { enter: "blur", render: (d) => <Dreamy photo={photoAt(7)} dur={d}><FloatCard photo={photoAt(7)} dur={d} side={-1} filter={SOFT} /></Dreamy> },
+  { enter: "zoom", render: (d) => <DoubleExposure base={photoAt(8)} over={photoAt(18)} dur={d} /> },
+  { enter: "blur", render: (d) => <Dreamy photo={photoAt(9)} dur={d}><FloatCard photo={photoAt(9)} dur={d} filter={SOFT} /></Dreamy> },
+  { enter: "zoom", render: (d) => <Dreamy photo={photoAt(10)} dur={d}><Collage photos={[photoAt(10), photoAt(11), photoAt(12), photoAt(14)]} dur={d} /></Dreamy> },
+  { enter: "blur", render: (d) => <Dreamy photo={photoAt(15)} dur={d}><FloatCard photo={photoAt(15)} dur={d} side={-1} filter={SOFT} /></Dreamy> },
+  { enter: "wipe", render: (d) => <Dreamy photo={photoAt(16)} dur={d}><ArchWindow photo={photoAt(16)} dur={d} left={190} top={170} w={700} h={1100} border="rgba(255,225,240,0.9)" filter={SOFT} /></Dreamy> },
+  { enter: "blur", render: (d) => <Dreamy photo={photoAt(17)} dur={d}><FloatCard photo={photoAt(17)} dur={d} filter={SOFT} /></Dreamy> },
 ];
 const INTRO_BEATS = 8;
 const SHOT_BEATS = 8;
@@ -187,11 +193,11 @@ export const Template3: React.FC = () => {
       </Sequence>
       <Shots shots={shots} overlap={20} inLen={26} />
       <Sequence from={endFrom} durationInFrames={T.total - endFrom}>
-        <Ending dur={T.total - endFrom} photo={photoAt(17)} />
+        <Ending dur={T.total - endFrom} photo={photoAt(19)} />
       </Sequence>
       <Bokeh />
       <LightLeaks cuts={cuts} palette="rose" ambient={0.16} />
-      <Lyrics data={lyrics} font={SERIF} italic size={72} bottom={230} glow="rgba(255,170,220,0.6)" />
+      <Lyrics data={lyrics} font={SERIF} hiFont={HINDI} enFont={SERIF} size={68} bottom={120} accent="#ffd6ea" glow="rgba(255,150,210,0.6)" />
     </AbsoluteFill>
   );
 };

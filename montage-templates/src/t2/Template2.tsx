@@ -3,6 +3,8 @@ import { AbsoluteFill, Audio, Easing, Sequence, interpolate, random, staticFile,
 import { loadFont as loadKaushan } from "@remotion/google-fonts/KaushanScript";
 import { loadFont as loadCaveat } from "@remotion/google-fonts/Caveat";
 import { loadFont as loadHomemade } from "@remotion/google-fonts/HomemadeApple";
+import { loadFont as loadTiro } from "@remotion/google-fonts/TiroDevanagariHindi";
+import { loadFont as loadCormorant } from "@remotion/google-fonts/CormorantGaramond";
 import timing from "../timing/t2.json";
 import { DATE_DOTS, END_YEAR, FIRST, SECOND, START_YEAR, YEARS, clamp, makeTiming, ordinal, photoAt, Grain, Vignette } from "../shared";
 import { ArchWindow, BlurFill, Diptych, Enter, FullBleed, LightLeaks, ShotSpec, Shots, TapedPolaroid, TornPaper } from "../shared/fx";
@@ -12,6 +14,8 @@ import lyrics from "../lyrics/t2.json";
 const { fontFamily: BRUSH } = loadKaushan("normal", { weights: ["400"], subsets: ["latin"] });
 const { fontFamily: HAND } = loadCaveat("normal", { weights: ["500"], subsets: ["latin"] });
 const { fontFamily: INK } = loadHomemade("normal", { weights: ["400"], subsets: ["latin"] });
+const { fontFamily: HINDI } = loadTiro("normal", { weights: ["400"], subsets: ["devanagari"] });
+const { fontFamily: SERIF } = loadCormorant("italic", { weights: ["500"], subsets: ["latin"] });
 
 const T = makeTiming(timing);
 export const T2_DURATION = T.total;
@@ -107,44 +111,6 @@ const Title: React.FC<{ dur: number }> = ({ dur }) => {
   );
 };
 
-const QUOTE = [
-  `${YEARS} years of love,`,
-  "laughter and togetherness.",
-  "Through every season,",
-  "you chose each other.",
-  "Thank you for showing us",
-  "what forever looks like.",
-];
-
-const Quote: React.FC<{ dur: number }> = ({ dur }) => {
-  const f = useCurrentFrame();
-  const out = interpolate(f, [dur - 10, dur], [1, 0], clamp);
-  const per = (dur - 40) / QUOTE.length;
-  return (
-    <AbsoluteFill style={{ alignItems: "center", justifyContent: "center", opacity: out }}>
-      {QUOTE.map((line, i) => {
-        const a = interpolate(f, [8 + i * per, 8 + i * per + 14], [0, 1], clamp);
-        return (
-          <div
-            key={i}
-            style={{
-              fontFamily: HAND,
-              fontSize: 90,
-              lineHeight: 1.35,
-              color: "#fffaf0",
-              opacity: a,
-              transform: `translateY(${(1 - a) * 16}px)`,
-              textShadow: "0 3px 14px rgba(0,0,0,0.6)",
-            }}
-          >
-            {line}
-          </div>
-        );
-      })}
-    </AbsoluteFill>
-  );
-};
-
 const Finale: React.FC<{ dur: number }> = ({ dur }) => {
   const f = useCurrentFrame();
   const a = interpolate(f, [4, 22], [0, 1], clamp);
@@ -174,26 +140,31 @@ const SOFT = "sepia(0.15) saturate(1.05)";
 const cream = "radial-gradient(ellipse at 50% 40%, #f5ecdc 0%, #e6d6bb 70%, #cdb894 100%)";
 
 const SHOTS: { beats: [number, number]; enter: Enter; render: (d: number) => React.ReactNode }[] = [
-  { beats: [8, 16], enter: "rise", render: (d) => <TornPaper photo={photoAt(0)} dur={d} left={110} top={330} w={860} h={1180} rot={-2} filter={OLD} seed={1} /> },
-  { beats: [16, 24], enter: "blur", render: (d) => <TapedPolaroid photo={photoAt(1)} dur={d} left={150} top={340} w={780} rot={-3} label="the early days" font={HAND} filter={OLD} /> },
-  { beats: [24, 32], enter: "wipe", render: (d) => <BlurFill photo={photoAt(2)} dur={d} box={{ left: 90, top: 400, width: 900, height: 990 }} radius={6} filter={OLD} /> },
+  { beats: [8, 16], enter: "rise", render: (d) => <TornPaper photo={photoAt(0)} dur={d} left={130} top={230} w={820} h={1150} rot={-2} filter={OLD} seed={1} /> },
+  { beats: [16, 24], enter: "blur", render: (d) => <TapedPolaroid photo={photoAt(1)} dur={d} left={170} top={250} w={740} rot={-3} label="the early days" font={HAND} filter={OLD} /> },
+  { beats: [24, 32], enter: "wipe", render: (d) => <BlurFill photo={photoAt(2)} dur={d} box={{ left: 110, top: 260, width: 860, height: 950 }} radius={6} filter={OLD} /> },
   { beats: [32, 40], enter: "iris", render: (d) => <Diptych a={photoAt(3)} b={photoAt(4)} dur={d} stacked bg="#efe5d2" filter={SOFT} /> },
   { beats: [40, 48], enter: "blur", render: (d) => (
     <AbsoluteFill style={{ background: cream }}>
-      <TapedPolaroid photo={photoAt(5)} dur={d} left={70} top={220} w={600} rot={-6} filter={SOFT} />
-      <TapedPolaroid photo={photoAt(6)} dur={d} left={420} top={860} w={600} rot={5} label="always us" font={HAND} filter={SOFT} />
+      <TapedPolaroid photo={photoAt(5)} dur={d} left={80} top={150} w={540} rot={-6} filter={SOFT} />
+      <TapedPolaroid photo={photoAt(6)} dur={d} left={470} top={640} w={520} rot={5} label="always us" font={HAND} filter={SOFT} />
+    </AbsoluteFill>
+  ) },
+  { beats: [48, 58], enter: "blur", render: (d) => (
+    <AbsoluteFill style={{ background: cream }}>
+      <TapedPolaroid photo={photoAt(9)} dur={d} left={300} top={140} w={560} rot={4} filter={SOFT} />
+      <TapedPolaroid photo={photoAt(7)} dur={d} left={70} top={620} w={540} rot={-5} label="little celebrations" font={HAND} filter={SOFT} />
     </AbsoluteFill>
   ) },
   { beats: [58, 66], enter: "blur", render: (d) => <BlurFill photo={photoAt(13)} dur={d} box={{ left: 70, top: 560, width: 940, height: 640 }} filter={SOFT} /> },
   { beats: [66, 74], enter: "iris", render: (d) => (
     <AbsoluteFill style={{ background: cream }}>
-      <ArchWindow photo={photoAt(15)} dur={d} left={160} top={300} w={760} h={1180} border="#b8925a" filter={SOFT} />
+      <ArchWindow photo={photoAt(15)} dur={d} left={190} top={220} w={700} h={1120} border="#b8925a" filter={SOFT} />
     </AbsoluteFill>
   ) },
-  { beats: [74, 82], enter: "rise", render: (d) => <TornPaper photo={photoAt(17)} dur={d} left={100} top={300} w={880} h={1220} rot={2} filter={SOFT} seed={4} /> },
+  { beats: [74, 82], enter: "rise", render: (d) => <TornPaper photo={photoAt(17)} dur={d} left={130} top={230} w={820} h={1150} rot={2} filter={SOFT} seed={4} /> },
   { beats: [82, 90], enter: "wipe", render: (d) => <FullBleed photo={photoAt(19)} dur={d} filter={SOFT} line="rgba(255,240,215,0.6)" /> },
 ];
-const QUOTE_BEATS: [number, number] = [48, 58];
 const TITLE_END = 8;
 const FINALE_BEAT = 90;
 
@@ -205,10 +176,8 @@ export const Template2: React.FC = () => {
     exit: "blur",
     render: sh.render,
   }));
-  const quoteFrom = T.beat(QUOTE_BEATS[0]) + 8;
-  const quoteDur = T.beat(QUOTE_BEATS[1]) - quoteFrom;
   const finaleFrom = T.beat(FINALE_BEAT) + 6;
-  const cuts = [...shots.map((s) => s.from), quoteFrom, finaleFrom];
+  const cuts = [...shots.map((s) => s.from), finaleFrom];
   return (
     <AbsoluteFill style={{ background: "#000" }}>
       <Audio src={staticFile("audio/t2.mp3")} />
@@ -216,16 +185,12 @@ export const Template2: React.FC = () => {
       <Sequence durationInFrames={T.beat(TITLE_END) + 14}>
         <Title dur={T.beat(TITLE_END) + 14} />
       </Sequence>
-      <Shots shots={shots.slice(0, 5)} overlap={16} inLen={20} />
-      <Sequence from={quoteFrom} durationInFrames={quoteDur}>
-        <Quote dur={quoteDur} />
-      </Sequence>
-      <Shots shots={shots.slice(5)} overlap={16} inLen={20} />
+      <Shots shots={shots} overlap={16} inLen={20} />
       <Sequence from={finaleFrom} durationInFrames={T.total - finaleFrom}>
         <Finale dur={T.total - finaleFrom} />
       </Sequence>
       <LightLeaks cuts={cuts} palette="warm" ambient={0.14} />
-      <Lyrics data={lyrics} font={HAND} size={78} bottom={200} />
+      <Lyrics data={lyrics} font={HAND} hiFont={HINDI} enFont={SERIF} size={80} bottom={150} accent="#ffe2b0" />
       <Dust />
     </AbsoluteFill>
   );

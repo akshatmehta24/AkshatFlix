@@ -258,7 +258,7 @@ export const Template4: React.FC = () => {
         <OutroDeck dur={T.total - outroStart} />
       </Sequence>
       <LightLeaks cuts={[introEnd, outroStart]} palette="gold" ambient={0} />
-      <Lyrics data={lyrics} font={SERIF} italic size={70} bottom={230} />
+      <Lyrics data={lyrics} font={SERIF} size={70} bottom={230} />
     </AbsoluteFill>
   );
 };

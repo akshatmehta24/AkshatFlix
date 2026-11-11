@@ -1,1 +1,574 @@
-{ "lines": [] }
+{
+ "lines": [
+  {
+   "start": 7.38,
+   "end": 9.96,
+   "text": "dekhte hi dekhte pachchees saal beet gaye",
+   "hi": "पच्चीस साल",
+   "en": "twenty-five years, gone in the blink of an eye",
+   "words": [
+    {
+     "t": 7.38,
+     "w": "dekhte"
+    },
+    {
+     "t": 7.86,
+     "w": "hi"
+    },
+    {
+     "t": 8.06,
+     "w": "dekhte"
+    },
+    {
+     "t": 8.62,
+     "w": "pachchees"
+    },
+    {
+     "t": 9.16,
+     "w": "saal"
+    },
+    {
+     "t": 9.48,
+     "w": "beet"
+    },
+    {
+     "t": 9.76,
+     "w": "gaye"
+    }
+   ]
+  },
+  {
+   "start": 11.12,
+   "end": 13.96,
+   "text": "waqt ke parinde na jaane kahaan ud gaye",
+   "hi": "वक़्त",
+   "en": "the birds of time flew off, who knows where",
+   "words": [
+    {
+     "t": 11.12,
+     "w": "waqt"
+    },
+    {
+     "t": 11.46,
+     "w": "ke"
+    },
+    {
+     "t": 11.64,
+     "w": "parinde"
+    },
+    {
+     "t": 12.74,
+     "w": "na"
+    },
+    {
+     "t": 12.9,
+     "w": "jaane"
+    },
+    {
+     "t": 13.28,
+     "w": "kahaan"
+    },
+    {
+     "t": 13.58,
+     "w": "ud"
+    },
+    {
+     "t": 13.78,
+     "w": "gaye"
+    }
+   ]
+  },
+  {
+   "start": 15.76,
+   "end": 19.52,
+   "text": "hawa ke jhonke sa tha yeh pyaara safar",
+   "hi": "सफ़र",
+   "en": "like a breeze, this beautiful journey",
+   "words": [
+    {
+     "t": 15.76,
+     "w": "hawa"
+    },
+    {
+     "t": 16.1,
+     "w": "ke"
+    },
+    {
+     "t": 16.34,
+     "w": "jhonke"
+    },
+    {
+     "t": 16.82,
+     "w": "sa"
+    },
+    {
+     "t": 17.04,
+     "w": "tha"
+    },
+    {
+     "t": 18.18,
+     "w": "yeh"
+    },
+    {
+     "t": 18.48,
+     "w": "pyaara"
+    },
+    {
+     "t": 19.0,
+     "w": "safar"
+    }
+   ]
+  },
+  {
+   "start": 20.28,
+   "end": 23.9,
+   "text": "kabhi dhoop mili to kabhi chhaanv ka asar",
+   "hi": "धूप · छाँव",
+   "en": "sometimes sunshine, sometimes shade",
+   "words": [
+    {
+     "t": 20.28,
+     "w": "kabhi"
+    },
+    {
+     "t": 20.58,
+     "w": "dhoop"
+    },
+    {
+     "t": 20.96,
+     "w": "mili"
+    },
+    {
+     "t": 21.96,
+     "w": "to"
+    },
+    {
+     "t": 22.14,
+     "w": "kabhi"
+    },
+    {
+     "t": 22.92,
+     "w": "chhaanv"
+    },
+    {
+     "t": 23.32,
+     "w": "ka"
+    },
+    {
+     "t": 23.46,
+     "w": "asar"
+    }
+   ]
+  },
+  {
+   "start": 24.88,
+   "end": 27.36,
+   "text": "raahon mein aaye kai utaar chadhaav",
+   "hi": "उतार-चढ़ाव",
+   "en": "the road brought many ups and downs",
+   "words": [
+    {
+     "t": 24.88,
+     "w": "raahon"
+    },
+    {
+     "t": 25.26,
+     "w": "mein"
+    },
+    {
+     "t": 25.46,
+     "w": "aaye"
+    },
+    {
+     "t": 25.88,
+     "w": "kai"
+    },
+    {
+     "t": 26.12,
+     "w": "utaar"
+    },
+    {
+     "t": 26.78,
+     "w": "chadhaav"
+    }
+   ]
+  },
+  {
+   "start": 28.06,
+   "end": 32.14,
+   "text": "magar kam na hua kabhi bhi dil ka yeh chaav",
+   "hi": "दिल",
+   "en": "yet the heart's fondness never faded",
+   "words": [
+    {
+     "t": 28.06,
+     "w": "magar"
+    },
+    {
+     "t": 28.46,
+     "w": "kam"
+    },
+    {
+     "t": 28.72,
+     "w": "na"
+    },
+    {
+     "t": 28.92,
+     "w": "hua"
+    },
+    {
+     "t": 30.0,
+     "w": "kabhi"
+    },
+    {
+     "t": 30.36,
+     "w": "bhi"
+    },
+    {
+     "t": 31.0,
+     "w": "dil"
+    },
+    {
+     "t": 31.28,
+     "w": "ka"
+    },
+    {
+     "t": 31.48,
+     "w": "yeh"
+    },
+    {
+     "t": 31.7,
+     "w": "chaav"
+    }
+   ]
+  },
+  {
+   "start": 33.12,
+   "end": 36.72,
+   "text": "achchhe bure har din humne saath dekhe hain",
+   "hi": "साथ",
+   "en": "good days and bad, we have lived them together",
+   "words": [
+    {
+     "t": 33.12,
+     "w": "achchhe"
+    },
+    {
+     "t": 33.78,
+     "w": "bure"
+    },
+    {
+     "t": 34.5,
+     "w": "har"
+    },
+    {
+     "t": 34.78,
+     "w": "din"
+    },
+    {
+     "t": 35.12,
+     "w": "humne"
+    },
+    {
+     "t": 35.6,
+     "w": "saath"
+    },
+    {
+     "t": 36.04,
+     "w": "dekhe"
+    },
+    {
+     "t": 36.48,
+     "w": "hain"
+    }
+   ]
+  },
+  {
+   "start": 38.18,
+   "end": 42.2,
+   "text": "khushiyon ke rang aur gamon ke lekhe hain",
+   "hi": "रंग",
+   "en": "the colours of joy, the pages of sorrow",
+   "words": [
+    {
+     "t": 38.18,
+     "w": "khushiyon"
+    },
+    {
+     "t": 38.72,
+     "w": "ke"
+    },
+    {
+     "t": 38.9,
+     "w": "rang"
+    },
+    {
+     "t": 40.02,
+     "w": "aur"
+    },
+    {
+     "t": 40.28,
+     "w": "gamon"
+    },
+    {
+     "t": 40.66,
+     "w": "ke"
+    },
+    {
+     "t": 40.86,
+     "w": "lekhe"
+    },
+    {
+     "t": 41.38,
+     "w": "hain"
+    }
+   ]
+  },
+  {
+   "start": 43.36,
+   "end": 46.88,
+   "text": "par tumhaari himmat, tumhaara woh atoot vishwaas",
+   "hi": "विश्वास",
+   "en": "but your courage, your unbreakable faith",
+   "words": [
+    {
+     "t": 43.36,
+     "w": "par"
+    },
+    {
+     "t": 43.6,
+     "w": "tumhaari"
+    },
+    {
+     "t": 44.04,
+     "w": "himmat,"
+    },
+    {
+     "t": 45.02,
+     "w": "tumhaara"
+    },
+    {
+     "t": 45.52,
+     "w": "woh"
+    },
+    {
+     "t": 45.72,
+     "w": "atoot"
+    },
+    {
+     "t": 46.2,
+     "w": "vishwaas"
+    }
+   ]
+  },
+  {
+   "start": 47.94,
+   "end": 51.84,
+   "text": "mujhmein jagaata hai har pal ek nayi aas",
+   "hi": "आस",
+   "en": "wakes a new hope in me, every moment",
+   "words": [
+    {
+     "t": 47.94,
+     "w": "mujhmein"
+    },
+    {
+     "t": 48.52,
+     "w": "jagaata"
+    },
+    {
+     "t": 49.12,
+     "w": "hai"
+    },
+    {
+     "t": 49.76,
+     "w": "har"
+    },
+    {
+     "t": 50.04,
+     "w": "pal"
+    },
+    {
+     "t": 50.76,
+     "w": "ek"
+    },
+    {
+     "t": 51.04,
+     "w": "nayi"
+    },
+    {
+     "t": 51.42,
+     "w": "aas"
+    }
+   ]
+  },
+  {
+   "start": 52.94,
+   "end": 56.38,
+   "text": "milti hai tumhaari baaton se nayi oorja mujhe",
+   "hi": "ऊर्जा",
+   "en": "your words give me new strength",
+   "words": [
+    {
+     "t": 52.94,
+     "w": "milti"
+    },
+    {
+     "t": 53.4,
+     "w": "hai"
+    },
+    {
+     "t": 53.6,
+     "w": "tumhaari"
+    },
+    {
+     "t": 54.1,
+     "w": "baaton"
+    },
+    {
+     "t": 54.56,
+     "w": "se"
+    },
+    {
+     "t": 55.24,
+     "w": "nayi"
+    },
+    {
+     "t": 55.6,
+     "w": "oorja"
+    },
+    {
+     "t": 56.04,
+     "w": "mujhe"
+    }
+   ]
+  },
+  {
+   "start": 57.4,
+   "end": 62.16,
+   "text": "deta hai tumhaara saath aage badhne ki prerna mujhe",
+   "hi": "प्रेरणा",
+   "en": "having you beside me keeps me moving forward",
+   "words": [
+    {
+     "t": 57.4,
+     "w": "deta"
+    },
+    {
+     "t": 57.82,
+     "w": "hai"
+    },
+    {
+     "t": 58.02,
+     "w": "tumhaara"
+    },
+    {
+     "t": 58.64,
+     "w": "saath"
+    },
+    {
+     "t": 59.76,
+     "w": "aage"
+    },
+    {
+     "t": 60.18,
+     "w": "badhne"
+    },
+    {
+     "t": 60.7,
+     "w": "ki"
+    },
+    {
+     "t": 61.26,
+     "w": "prerna"
+    },
+    {
+     "t": 61.8,
+     "w": "mujhe"
+    }
+   ]
+  },
+  {
+   "start": 64.3,
+   "end": 67.8,
+   "text": "haathon mein haath rahe, bas yahi hai armaan",
+   "hi": "हाथों में हाथ",
+   "en": "hand in hand: that is all I wish for",
+   "words": [
+    {
+     "t": 64.3,
+     "w": "haathon"
+    },
+    {
+     "t": 64.8,
+     "w": "mein"
+    },
+    {
+     "t": 65.08,
+     "w": "haath"
+    },
+    {
+     "t": 65.48,
+     "w": "rahe,"
+    },
+    {
+     "t": 66.28,
+     "w": "bas"
+    },
+    {
+     "t": 66.62,
+     "w": "yahi"
+    },
+    {
+     "t": 66.98,
+     "w": "hai"
+    },
+    {
+     "t": 67.14,
+     "w": "armaan"
+    }
+   ]
+  },
+  {
+   "start": 68.94,
+   "end": 73.88,
+   "text": "tumse hi mukammal hai yeh mera saara jahaan",
+   "hi": "मुकम्मल",
+   "en": "with you alone, my whole world is complete",
+   "words": [
+    {
+     "t": 68.94,
+     "w": "tumse"
+    },
+    {
+     "t": 69.42,
+     "w": "hi"
+    },
+    {
+     "t": 69.6,
+     "w": "mukammal"
+    },
+    {
+     "t": 70.28,
+     "w": "hai"
+    },
+    {
+     "t": 71.48,
+     "w": "yeh"
+    },
+    {
+     "t": 71.66,
+     "w": "mera"
+    },
+    {
+     "t": 72.68,
+     "w": "saara"
+    },
+    {
+     "t": 73.34,
+     "w": "jahaan"
+    }
+   ]
+  }
+ ]
+}
