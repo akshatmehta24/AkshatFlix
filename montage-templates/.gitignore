@@ -7,10 +7,12 @@ dist
 out
 
 # Personal media: add locally, never commit
-public/*.jpg
-public/*.jpeg
-public/*.png
-public/*.mp3
-public/*.wav
-public/*.m4a
+public/**/*.jpg
+public/**/*.jpeg
+public/**/*.png
+public/**/*.heic
+public/**/*.mp3
+public/**/*.wav
+public/**/*.m4a
+out
 *.mp4

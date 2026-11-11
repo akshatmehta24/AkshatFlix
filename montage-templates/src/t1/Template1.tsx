@@ -2,7 +2,6 @@ import React from "react";
 import {
   AbsoluteFill,
   Audio,
-  Composition,
   Easing,
   Img,
   Sequence,
@@ -17,17 +16,16 @@ import { loadFont as loadVibes } from "@remotion/google-fonts/GreatVibes";
 import { loadFont as loadCormorant } from "@remotion/google-fonts/CormorantGaramond";
 import { loadFont as loadMontserrat } from "@remotion/google-fonts/Montserrat";
 import { loadFont as loadTiro } from "@remotion/google-fonts/TiroDevanagariHindi";
-import timing from "./song-timing.json";
+import timing from "../timing/t1.json";
+import { DATE_DOTS, DAY, DAYS_TOGETHER, END_YEAR, HER, HIM, MONTH, PHOTO_COUNT, START_YEAR, YEARS, ordinal, photoAt } from "../shared";
 
 const { fontFamily: SCRIPT } = loadVibes("normal", { weights: ["400"], subsets: ["latin"] });
 const { fontFamily: SERIF } = loadCormorant("normal", { weights: ["400", "600"], subsets: ["latin"] });
 const { fontFamily: SANS } = loadMontserrat("normal", { weights: ["500"], subsets: ["latin"] });
 const { fontFamily: HINDI } = loadTiro("normal", { weights: ["400"], subsets: ["devanagari"] });
 
-// ---------- Couple details (edit here) ----------
-const HER = "Soniya";
-const HIM = "Sandeep";
-const PHOTO = "photo.jpg";
+// Photo used by the scene currently on screen (set per scene below).
+const PhotoCtx = React.createContext(photoAt(0).src);
 
 // ---------- Timing ----------
 const FPS = 30;
@@ -66,7 +64,7 @@ const Photo: React.FC<{
   return (
     <div style={{ position: "absolute", inset: 0, overflow: "hidden", ...style }}>
       <Img
-        src={staticFile(PHOTO)}
+        src={staticFile(React.useContext(PhotoCtx))}
         style={{
           width: "100%",
           height: "100%",
@@ -341,7 +339,7 @@ const Intro: React.FC<{ dur: number }> = ({ dur }) => {
             filter: "drop-shadow(0 10px 30px rgba(0,0,0,0.6))",
           }}
         >
-          25
+          {YEARS}
         </div>
         <div
           style={{
@@ -442,7 +440,7 @@ const Names: React.FC<{ dur: number; start: number }> = ({ dur, start }) => {
             textTransform: "uppercase",
           }}
         >
-          Celebrating 25 years of love
+          Celebrating {YEARS} years of love
         </div>
       </AbsoluteFill>
     </AbsoluteFill>
@@ -458,7 +456,7 @@ const CardVintage: React.FC<CardProps> = ({ dur }) => (
     <Grain opacity={0.28} />
     <Vignette strength={0.85} />
     <BottomScrim />
-    <Caption kicker="30 November 2001" script="Where it all began" />
+    <Caption kicker={`${DAY} ${MONTH} ${START_YEAR}`} script="Where it all began" />
   </AbsoluteFill>
 );
 
@@ -702,7 +700,7 @@ const CardWarm: React.FC<CardProps> = ({ dur }) => (
     <Photo dur={dur} from={1.15} to={1.0} dx={-30} filter="sepia(0.25) saturate(1.25) brightness(1.05)" />
     <LightLeak dur={dur} />
     <BottomScrim />
-    <Caption kicker="25 years later" script="Still choosing each other" bottom={170} />
+    <Caption kicker={`${YEARS} years later`} script="Still choosing each other" bottom={170} />
   </AbsoluteFill>
 );
 
@@ -806,8 +804,8 @@ const CardFramed: React.FC<CardProps> = ({ dur }) => {
 const Timeline: React.FC<{ dur: number }> = ({ dur }) => {
   const f = useCurrentFrame();
   const p = interpolate(f, [4, dur - 30], [0, 1], { ...clamp, easing: Easing.inOut(Easing.quad) });
-  const year = Math.round(2001 + 25 * p);
-  const days = Math.round(9131 * p);
+  const year = Math.round(START_YEAR + YEARS * p);
+  const days = Math.round(DAYS_TOGETHER * p);
   const done = interpolate(f, [dur - 30, dur - 18], [0, 1], clamp);
   return (
     <AbsoluteFill>
@@ -816,7 +814,7 @@ const Timeline: React.FC<{ dur: number }> = ({ dur }) => {
       <Dust count={50} />
       <AbsoluteFill style={{ alignItems: "center", justifyContent: "center" }}>
         <div style={{ fontFamily: SANS, fontSize: 44, letterSpacing: 14, color: GOLD, marginBottom: 10 }}>
-          FROM 2001 TO
+          FROM {START_YEAR} TO
         </div>
         <div
           style={{
@@ -908,7 +906,7 @@ const Finale: React.FC<{ dur: number }> = ({ dur }) => {
               textTransform: "uppercase",
             }}
           >
-            Happy 25th Anniversary
+            Happy {ordinal(YEARS)} Anniversary
           </div>
           <div
             style={{
@@ -930,7 +928,7 @@ const Finale: React.FC<{ dur: number }> = ({ dur }) => {
             {HER} &amp; {HIM}
           </div>
           <div style={{ fontFamily: SERIF, fontSize: 60, color: "#fff", opacity: t3, marginTop: 20, letterSpacing: 4 }}>
-            30 · 11 · 2001 &nbsp;—&nbsp; 30 · 11 · 2026
+            {DATE_DOTS(START_YEAR)} &nbsp;—&nbsp; {DATE_DOTS(END_YEAR)}
           </div>
           <div style={{ fontFamily: SCRIPT, fontSize: 84, color: "#f7e2a4", opacity: t3, marginTop: 30 }}>
             Forever to go
@@ -971,49 +969,46 @@ const FlashOnCuts: React.FC<{ cuts: number[] }> = ({ cuts }) => {
   return <AbsoluteFill style={{ background: "#fff8ea", opacity: o, pointerEvents: "none" }} />;
 };
 
-export const Anniversary: React.FC = () => {
+export const Template1: React.FC = () => {
   const namesStart = beat(7);
   const montageStart = beat(MONTAGE_START_BEAT);
   const cardStarts = CARDS.map((_, i) => beat(MONTAGE_START_BEAT + i * BEATS_PER_CARD));
   const cuts = [montageStart, ...cardStarts.slice(1), TIMELINE_START, FINALE_START];
   return (
     <AbsoluteFill style={{ background: "#000" }}>
-      <Audio src={staticFile("song.mp3")} />
+      <Audio src={staticFile("audio/t1.mp3")} />
       <Sequence durationInFrames={namesStart + 6}>
         <Intro dur={namesStart + 6} />
       </Sequence>
       <Sequence from={namesStart} durationInFrames={montageStart - namesStart}>
-        <Names dur={montageStart - namesStart} start={namesStart} />
+        <PhotoCtx.Provider value={photoAt(0).src}>
+          <Names dur={montageStart - namesStart} start={namesStart} />
+        </PhotoCtx.Provider>
       </Sequence>
       {CARDS.map((C, i) => {
         const s = cardStarts[i];
         const e = i + 1 < CARDS.length ? cardStarts[i + 1] : TIMELINE_START;
         return (
           <Sequence key={i} from={s} durationInFrames={e - s}>
-            <C dur={e - s} start={s} />
+            <PhotoCtx.Provider value={photoAt(i).src}>
+              <C dur={e - s} start={s} />
+            </PhotoCtx.Provider>
           </Sequence>
         );
       })}
       <Sequence from={TIMELINE_START} durationInFrames={FINALE_START - TIMELINE_START}>
-        <Timeline dur={FINALE_START - TIMELINE_START} />
+        <PhotoCtx.Provider value={photoAt(0).src}>
+          <Timeline dur={FINALE_START - TIMELINE_START} />
+        </PhotoCtx.Provider>
       </Sequence>
       <Sequence from={FINALE_START} durationInFrames={TOTAL - FINALE_START}>
-        <Finale dur={TOTAL - FINALE_START} />
+        <PhotoCtx.Provider value={photoAt(PHOTO_COUNT - 1).src}>
+          <Finale dur={TOTAL - FINALE_START} />
+        </PhotoCtx.Provider>
       </Sequence>
       <FlashOnCuts cuts={cuts} />
     </AbsoluteFill>
   );
 };
 
-export const MyComposition = () => {
-  return (
-    <Composition
-      id="Anniversary"
-      component={Anniversary}
-      durationInFrames={TOTAL}
-      fps={FPS}
-      width={1080}
-      height={1920}
-    />
-  );
-};
+export const T1_DURATION = TOTAL;

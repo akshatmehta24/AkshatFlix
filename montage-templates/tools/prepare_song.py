@@ -2,12 +2,12 @@
 
 Takes any audio or video file, trims it, loops it on the beat if it is too
 short, detects beats, and writes:
-  public/song.mp3          the final soundtrack
-  src/song-timing.json     beat times + duration the video syncs to
+  public/audio/<name>.mp3     the final soundtrack
+  src/timing/<name>.json      beat times + duration the video syncs to
 
 Usage:
   pip install librosa
-  python3 tools/prepare_song.py <input file> [--start S] [--end S] [--target 52]
+  python3 tools/prepare_song.py <input file> --name t1 [--start S] [--end S] [--target 52] [--no-loop]
 """
 
 import argparse
@@ -30,6 +30,8 @@ def run(cmd):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("input")
+    ap.add_argument("--name", required=True, help="template id, e.g. t1")
+    ap.add_argument("--no-loop", action="store_true", help="never repeat the clip")
     ap.add_argument("--start", type=float, default=None, help="seconds; default = first audible sound")
     ap.add_argument("--end", type=float, default=None, help="seconds; default = last audible sound")
     ap.add_argument("--target", type=float, default=52.0, help="final length in seconds")
@@ -57,7 +59,7 @@ def main():
     # right after the previous copy's last beat.
     pieces, timeline = [], []
     offset = 0.0
-    while offset < a.target:
+    while offset < a.target and not (a.no_loop and pieces):
         pieces.append(offset)
         timeline += [offset + b for b in seg]
         next_offset = offset + seg[-1] + period - seg[0]
@@ -80,16 +82,16 @@ def main():
         f"{''.join(labels)}amix=inputs={len(labels)}:normalize=0,atrim=0:{duration},"
         f"afade=t=out:st={fade}:d=2.7,loudnorm=I=-14:TP=-1.5[o]"
     )
-    out_mp3 = os.path.join(ROOT, "public", "song.mp3")
+    out_mp3 = os.path.join(ROOT, "public", "audio", f"{a.name}.mp3")
     run(["ffmpeg", "-y", "-i", a.input, "-filter_complex", ";".join(filters), "-map", "[o]",
          "-ar", "48000", "-c:a", "libmp3lame", "-b:a", "256k", out_mp3])
 
-    with open(os.path.join(ROOT, "src", "song-timing.json"), "w") as f:
+    with open(os.path.join(ROOT, "src", "timing", f"{a.name}.json"), "w") as f:
         json.dump({"duration": round(duration, 3), "beats": timeline}, f, indent=1)
 
     print(f"tempo ~{60 / period:.0f} BPM, {len(timeline)} beats, {duration:.1f}s, {len(pieces)} copies")
-    if len(timeline) < 80:
-        print("WARNING: template needs ~80 beats; use a longer clip or raise --target")
+    if a.name == "t1" and len(timeline) < 80:
+        print("WARNING: template 1 needs ~80 beats; use a longer clip or raise --target")
 
 
 if __name__ == "__main__":

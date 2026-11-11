@@ -1,0 +1,9 @@
+{
+  "her": "Sonia",
+  "him": "Sandeep",
+  "weddingDate": "2001-11-30",
+  "years": 25,
+  "photos": [
+    { "src": "photos/demo.jpg", "fx": 40, "fy": 62 }
+  ]
+}

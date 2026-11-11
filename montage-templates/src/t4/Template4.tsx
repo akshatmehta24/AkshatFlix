@@ -1,0 +1,279 @@
+import React from "react";
+import { AbsoluteFill, Audio, Easing, Sequence, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
+import { loadFont as loadMarker } from "@remotion/google-fonts/PermanentMarker";
+import { loadFont as loadOswald } from "@remotion/google-fonts/Oswald";
+import { loadFont as loadAllura } from "@remotion/google-fonts/Allura";
+import { loadFont as loadBungee } from "@remotion/google-fonts/Bungee";
+import timing from "../timing/t4.json";
+import { HER, HIM, Photo, YEARS, clamp, makeTiming, ordinal, photoAt, Grain, Vignette } from "../shared";
+
+const { fontFamily: MARKER } = loadMarker("normal", { weights: ["400"], subsets: ["latin"] });
+const { fontFamily: OSWALD } = loadOswald("normal", { weights: ["500"], subsets: ["latin"] });
+const { fontFamily: SCRIPT } = loadAllura("normal", { weights: ["400"], subsets: ["latin"] });
+const { fontFamily: NEON } = loadBungee("normal", { weights: ["400"], subsets: ["latin"] });
+
+const T = makeTiming(timing);
+export const T4_DURATION = T.total;
+
+const ANNIV = `${ordinal(YEARS)} anniversary`;
+
+// ---------- Cassette tape ----------
+const Reel: React.FC<{ cx: number; cy: number; angle: number; tape: number }> = ({ cx, cy, angle, tape }) => (
+  <g transform={`translate(${cx} ${cy})`}>
+    <circle r={tape} fill="#3b2418" />
+    <circle r={40} fill="#e8e0cf" />
+    <g transform={`rotate(${angle})`}>
+      {new Array(6).fill(0).map((_, i) => (
+        <rect key={i} x={-5} y={-30} width={10} height={14} fill="#2b2724" transform={`rotate(${i * 60})`} />
+      ))}
+    </g>
+    <circle r={16} fill="#2b2724" />
+  </g>
+);
+
+const Cassette: React.FC<{ spin: number }> = ({ spin }) => (
+  <svg width="840" height="540" viewBox="0 0 840 540">
+    <defs>
+      <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stopColor="#3a3430" />
+        <stop offset="1" stopColor="#1e1b19" />
+      </linearGradient>
+    </defs>
+    <rect x="4" y="4" width="832" height="532" rx="30" fill="url(#body)" stroke="#0e0d0c" strokeWidth="4" />
+    <rect x="44" y="40" width="752" height="330" rx="18" fill="#efe4c9" />
+    <rect x="44" y="40" width="752" height="22" rx="10" fill="#c8452f" />
+    <rect x="44" y="62" width="752" height="10" fill="#e89a3c" />
+    <text x="420" y="150" textAnchor="middle" fontFamily={MARKER} fontSize="64" fill="#1f1a17">
+      {HER} ♥ {HIM}
+    </text>
+    <rect x="240" y="180" width="360" height="120" rx="58" fill="#15110f" stroke="#6a625a" strokeWidth="4" />
+    <Reel cx={315} cy={240} angle={spin} tape={52} />
+    <Reel cx={525} cy={240} angle={spin} tape={44} />
+    <text x="420" y="350" textAnchor="middle" fontFamily={MARKER} fontSize="44" fill="#1f1a17">
+      {ANNIV.toUpperCase()}
+    </text>
+    <text x="80" y="110" fontFamily={OSWALD} fontSize="34" fill="#8a7a62">A</text>
+    <path d="M170 536 L220 420 L620 420 L670 536 Z" fill="#26221f" stroke="#0e0d0c" strokeWidth="3" />
+    {[[30, 30], [810, 30], [30, 510], [810, 510], [420, 470]].map(([x, y], i) => (
+      <circle key={i} cx={x} cy={y} r="9" fill="#5e5852" stroke="#1a1816" strokeWidth="2" />
+    ))}
+  </svg>
+);
+
+// ---------- Tape deck scene ----------
+const Deck: React.FC<{ drop: number; spin: number; neon: string; neonOn: number; press: number; zoom: number }> = ({
+  drop,
+  spin,
+  neon,
+  neonOn,
+  press,
+  zoom,
+}) => (
+  <AbsoluteFill style={{ transform: `scale(${zoom})`, transformOrigin: "50% 50%" }}>
+    <AbsoluteFill style={{ background: "radial-gradient(ellipse at 70% 15%, #7a4a22 0%, #3d2412 40%, #160c05 100%)" }} />
+    {/* top panel */}
+    <div
+      style={{
+        position: "absolute",
+        left: 50,
+        right: 50,
+        top: 290,
+        height: 230,
+        borderRadius: 18,
+        background: "linear-gradient(180deg, #3a2a1c, #20160d)",
+        boxShadow: "inset 0 2px 0 rgba(255,220,170,0.15), 0 10px 30px rgba(0,0,0,0.5)",
+      }}
+    >
+      <div style={{ position: "absolute", left: 40, top: 26, fontFamily: OSWALD, fontSize: 24, color: "#b9a487", letterSpacing: 3 }}>
+        VT-25 &nbsp; STEREO
+      </div>
+      <div style={{ position: "absolute", left: 0, right: 0, top: 80, textAlign: "center", fontFamily: OSWALD, fontSize: 68, color: "#e2d6c1", letterSpacing: 6 }}>
+        {ANNIV.toUpperCase()}
+      </div>
+      <div style={{ position: "absolute", left: 40, bottom: 18, fontFamily: OSWALD, fontSize: 22, color: "#b9a487" }}>VE-25</div>
+    </div>
+    {/* tape door */}
+    <div
+      style={{
+        position: "absolute",
+        left: 90,
+        top: 590,
+        width: 900,
+        height: 640,
+        borderRadius: 22,
+        background: "linear-gradient(180deg, #120c08, #24180f)",
+        boxShadow: "inset 0 20px 50px rgba(0,0,0,0.9), 0 2px 0 rgba(255,220,170,0.12)",
+        overflow: "hidden",
+      }}
+    >
+      <div style={{ position: "absolute", left: 30, top: 50 + drop, transform: `rotate(${(drop / -900) * 6}deg)` }}>
+        <Cassette spin={spin} />
+      </div>
+      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(160deg, rgba(255,230,190,0.16), rgba(0,0,0,0) 40%)" }} />
+    </div>
+    {/* buttons */}
+    <div style={{ position: "absolute", left: 90, top: 1280, width: 900, display: "flex", gap: 14 }}>
+      {["◀◀", "▶", "▶▶", "■", "⏏"].map((b, i) => (
+        <div
+          key={i}
+          style={{
+            flex: 1,
+            height: 110,
+            borderRadius: 10,
+            background: "linear-gradient(180deg, #4a3a2c, #241a12)",
+            boxShadow: "0 8px 0 #0d0905, inset 0 2px 0 rgba(255,220,170,0.2)",
+            transform: `translateY(${i === 1 ? press * 8 : 0}px)`,
+            color: i === 1 && press > 0.5 ? "#ffcf6a" : "#cdbb9f",
+            fontSize: 44,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontFamily: OSWALD,
+          }}
+        >
+          {b}
+        </div>
+      ))}
+    </div>
+    {/* neon sign */}
+    <div
+      style={{
+        position: "absolute",
+        left: 0,
+        right: 0,
+        top: 1500,
+        textAlign: "center",
+        fontFamily: NEON,
+        fontSize: 170,
+        color: neonOn > 0.5 ? "#ffe6a8" : "#5a4630",
+        textShadow:
+          neonOn > 0.5
+            ? "0 0 10px #ffb347, 0 0 30px #ff9a1f, 0 0 60px #ff7b00, 0 0 110px #ff5e00"
+            : "none",
+        opacity: neonOn > 0 ? 1 : 0,
+      }}
+    >
+      {neon}
+    </div>
+    <AbsoluteFill style={{ background: "radial-gradient(circle at 75% 10%, rgba(255,170,80,0.35), rgba(0,0,0,0) 45%)", mixBlendMode: "screen" }} />
+    <Grain opacity={0.16} />
+    <Vignette strength={0.65} />
+  </AbsoluteFill>
+);
+
+// Neon flicker pattern: off/on blips, then steady.
+const flicker = (f: number, start: number) => {
+  const pattern = [1, 0, 1, 1, 0, 0, 1, 0, 1, 1, 1, 1];
+  const i = Math.floor((f - start) / 2);
+  if (f < start) return 0;
+  return i < pattern.length ? pattern[i] : 1;
+};
+
+const IntroDeck: React.FC<{ dur: number }> = ({ dur }) => {
+  const f = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const seat = spring({ frame: f - 4, fps, config: { damping: 13, mass: 1.1 }, durationInFrames: T.beat(3) });
+  const spinStart = T.beat(5);
+  const spin = f < spinStart ? 0 : (f - spinStart) * 9;
+  const pressAt = T.beat(6);
+  const press = interpolate(f, [pressAt, pressAt + 3, pressAt + 10], [0, 1, 0.6], clamp);
+  const zoom = interpolate(f, [dur - 18, dur], [1, 2.4], { ...clamp, easing: Easing.in(Easing.cubic) });
+  const black = interpolate(f, [dur - 8, dur], [0, 1], clamp);
+  return (
+    <AbsoluteFill>
+      <Deck drop={(1 - seat) * -1100} spin={spin} neon="PLAY" neonOn={flicker(f, T.beat(7))} press={press} zoom={zoom} />
+      <AbsoluteFill style={{ background: "#000", opacity: black }} />
+    </AbsoluteFill>
+  );
+};
+
+const OutroDeck: React.FC<{ dur: number }> = ({ dur }) => {
+  const f = useCurrentFrame();
+  const inA = interpolate(f, [0, 8], [0, 1], clamp);
+  const out = interpolate(f, [dur - 14, dur], [1, 0], clamp);
+  const zoom = interpolate(f, [0, 20], [1.6, 1], { ...clamp, easing: Easing.out(Easing.cubic) });
+  return (
+    <AbsoluteFill style={{ opacity: Math.min(inA, out), background: "#000" }}>
+      <Deck drop={0} spin={f * 9} neon="FOREVER" neonOn={flicker(f, 10)} press={0} zoom={zoom} />
+    </AbsoluteFill>
+  );
+};
+
+// ---------- Fast photo flip-through ----------
+const Flip: React.FC<{ index: number; dur: number }> = ({ index, dur }) => {
+  const f = useCurrentFrame();
+  const settle = interpolate(f, [0, 6], [1, 0], { ...clamp, easing: Easing.out(Easing.cubic) });
+  const portrait = index % 3 === 2;
+  const rot = (index % 2 ? 1.6 : -1.4) + settle * (index % 2 ? 3 : -3);
+  const w = portrait ? 780 : 1000;
+  const h = portrait ? 1040 : 760;
+  return (
+    <div
+      style={{
+        position: "absolute",
+        left: (1080 - w) / 2,
+        top: 470 + (portrait ? -60 : 80),
+        width: w,
+        height: h,
+        padding: index % 2 ? 14 : 0,
+        background: "#f4efe6",
+        transform: `rotate(${rot}deg) scale(${1 + settle * 0.05})`,
+        boxShadow: "0 20px 50px rgba(0,0,0,0.6)",
+      }}
+    >
+      <div style={{ position: "relative", width: "100%", height: "100%", overflow: "hidden" }}>
+        <Photo photo={photoAt(index)} dur={dur} from={1.05} to={1.1} filter="saturate(1.12) contrast(1.04)" />
+      </div>
+    </div>
+  );
+};
+
+const PhotoReel: React.FC<{ startBeat: number; endBeat: number }> = ({ startBeat, endBeat }) => {
+  const f = useCurrentFrame();
+  const start = T.beat(startBeat);
+  const dur = T.beat(endBeat) - start;
+  const title = interpolate(f, [0, 12], [0, 1], clamp);
+  const out = interpolate(f, [dur - 8, dur], [1, 0], clamp);
+  const slots = [];
+  for (let b = startBeat, i = 0; b < endBeat; b += 2, i++) {
+    const s = T.beat(b) - start;
+    const e = Math.min(T.beat(b + 2), T.beat(endBeat)) - start;
+    slots.push(
+      <Sequence key={i} from={s} durationInFrames={e - s} layout="none">
+        <Flip index={i} dur={e - s} />
+      </Sequence>,
+    );
+  }
+  return (
+    <AbsoluteFill style={{ background: "#050505", opacity: out }}>
+      <div style={{ position: "absolute", top: 230, left: 0, right: 0, textAlign: "center", fontFamily: SCRIPT, fontSize: 120, color: "#f6f1e8", opacity: title }}>
+        {ANNIV}
+      </div>
+      {slots}
+      <Grain opacity={0.1} />
+    </AbsoluteFill>
+  );
+};
+
+// ---------- Running order (in beats; the song is ~108 BPM) ----------
+const PHOTOS_FROM = 10;
+const PHOTOS_TO = 32;
+
+export const Template4: React.FC = () => {
+  const introEnd = T.beat(PHOTOS_FROM);
+  const outroStart = T.beat(PHOTOS_TO);
+  return (
+    <AbsoluteFill style={{ background: "#000" }}>
+      <Audio src={staticFile("audio/t4.mp3")} />
+      <Sequence durationInFrames={introEnd}>
+        <IntroDeck dur={introEnd} />
+      </Sequence>
+      <Sequence from={introEnd} durationInFrames={outroStart - introEnd}>
+        <PhotoReel startBeat={PHOTOS_FROM} endBeat={PHOTOS_TO} />
+      </Sequence>
+      <Sequence from={outroStart} durationInFrames={T.total - outroStart}>
+        <OutroDeck dur={T.total - outroStart} />
+      </Sequence>
+    </AbsoluteFill>
+  );
+};
