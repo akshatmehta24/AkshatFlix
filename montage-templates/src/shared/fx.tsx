@@ -186,7 +186,7 @@ export const BlurFill: React.FC<{ photo: PhotoInfo; dur: number; box: React.CSSP
     <Photo photo={photo} dur={dur} from={1.3} to={1.4} filter={`blur(34px) brightness(0.8) saturate(1.1) ${filter ?? ""}`} />
     <AbsoluteFill style={{ background: tint }} />
     <div style={{ position: "absolute", overflow: "hidden", borderRadius: radius, boxShadow: "0 30px 80px rgba(0,0,0,0.45)", ...box }}>
-      <Photo photo={photo} dur={dur} from={1.02} to={1.1} filter={filter} />
+      <Photo photo={photo} dur={dur} from={1.02} to={1.1} filter={filter} aspect={Number(box.width) / Number(box.height)} />
     </div>
   </AbsoluteFill>
 );
@@ -203,7 +203,7 @@ export const ArchWindow: React.FC<{ photo: PhotoInfo; dur: number; left: number;
   filter,
 }) => (
   <div style={{ position: "absolute", left, top, width: w, height: h, borderRadius: `${w / 2}px ${w / 2}px 10px 10px`, overflow: "hidden", boxShadow: `0 0 0 3px ${border}, 0 30px 70px rgba(0,0,0,0.45)` }}>
-    <Photo photo={photo} dur={dur} from={1.04} to={1.14} filter={filter} />
+    <Photo photo={photo} dur={dur} from={1.04} to={1.14} filter={filter} aspect={w / h} />
   </div>
 );
 
@@ -223,13 +223,14 @@ export const Diptych: React.FC<{ a: PhotoInfo; b: PhotoInfo; dur: number; stacke
   const half: React.CSSProperties = stacked
     ? { position: "absolute", left: gap, right: gap, height: (1920 - gap * 3) / 2, overflow: "hidden" }
     : { position: "absolute", top: gap, bottom: gap, width: (1080 - gap * 3) / 2, overflow: "hidden" };
+  const halfAspect = stacked ? (1080 - gap * 2) / ((1920 - gap * 3) / 2) : (1080 - gap * 3) / 2 / (1920 - gap * 2);
   return (
     <AbsoluteFill style={{ background: bg }}>
       <div style={{ ...half, ...(stacked ? { top: gap } : { left: gap }), clipPath: stacked ? `inset(0 ${(1 - r1) * 100}% 0 0)` : `inset(0 0 ${(1 - r1) * 100}% 0)` }}>
-        <Photo photo={a} dur={dur} from={1.12} to={1.04} filter={filter} />
+        <Photo photo={a} dur={dur} from={1.12} to={1.04} filter={filter} aspect={halfAspect} />
       </div>
       <div style={{ ...half, ...(stacked ? { bottom: gap } : { right: gap }), clipPath: stacked ? `inset(0 0 0 ${(1 - r2) * 100}%)` : `inset(${(1 - r2) * 100}% 0 0 0)` }}>
-        <Photo photo={b} dur={dur} from={1.04} to={1.12} filter={filter} />
+        <Photo photo={b} dur={dur} from={1.04} to={1.12} filter={filter} aspect={halfAspect} />
       </div>
     </AbsoluteFill>
   );
@@ -250,7 +251,7 @@ export const TapedPolaroid: React.FC<{
 }> = ({ photo, dur, left, top, w, rot = 0, label, font, filter, tape = "rgba(240,214,160,0.85)" }) => (
   <div style={{ position: "absolute", left, top, width: w, padding: 22, paddingBottom: label ? 130 : 80, background: "#fbf8f1", boxShadow: "0 25px 60px rgba(0,0,0,0.4)", transform: `rotate(${rot}deg)` }}>
     <div style={{ position: "relative", width: "100%", aspectRatio: "4 / 5", overflow: "hidden" }}>
-      <Photo photo={photo} dur={dur} from={1.04} to={1.12} filter={filter} />
+      <Photo photo={photo} dur={dur} from={1.04} to={1.12} filter={filter} aspect={0.8} />
     </div>
     {label ? (
       <div style={{ position: "absolute", left: 0, right: 0, bottom: 26, textAlign: "center", fontFamily: font, fontSize: 64, color: "#3b2c22" }}>{label}</div>
@@ -283,7 +284,7 @@ export const TornPaper: React.FC<{ photo: PhotoInfo; dur: number; left: number; 
     <div style={{ position: "absolute", left, top, width: w, height: h, transform: `rotate(${rot}deg)`, filter: "drop-shadow(0 18px 30px rgba(0,0,0,0.45))" }}>
       <div style={{ position: "absolute", inset: 0, background: "#f3ead8", clipPath: `polygon(${pts.join(",")})` }} />
       <div style={{ position: "absolute", inset: 26, overflow: "hidden" }}>
-        <Photo photo={photo} dur={dur} from={1.04} to={1.12} filter={filter} />
+        <Photo photo={photo} dur={dur} from={1.04} to={1.12} filter={filter} aspect={(w - 52) / (h - 52)} />
       </div>
     </div>
   );
@@ -305,7 +306,7 @@ export const FilmFrame: React.FC<{ photo: PhotoInfo; dur: number; num: number; f
           </div>
         ))}
         <div style={{ position: "absolute", left: 90, right: 90, top: 70, bottom: 70, overflow: "hidden" }}>
-          <Photo photo={photo} dur={dur} from={1.06} to={1.12} filter={filter} />
+          <Photo photo={photo} dur={dur} from={1.06} to={1.12} filter={filter} aspect={780 / 1420} />
         </div>
         <div style={{ position: "absolute", left: 90, top: 20, fontFamily: "monospace", fontSize: 26, color: "#e8a23a", letterSpacing: 4 }}>KODAK 400 ▸ {num}A</div>
         <div style={{ position: "absolute", right: 90, bottom: 18, fontFamily: "monospace", fontSize: 26, color: "#e8a23a", letterSpacing: 4 }}>{num + 1} ▸ 25</div>
@@ -325,7 +326,7 @@ export const BoothStrip: React.FC<{ photos: PhotoInfo[]; dur: number; bg?: strin
           return (
             <div key={i} style={{ position: "relative", height: 430, marginBottom: i < 2 ? 18 : 0, overflow: "hidden", background: "#ddd" }}>
               <div style={{ position: "absolute", inset: 0, opacity: r, filter: `brightness(${1 + (1 - r) * 1.5})` }}>
-                <Photo photo={p} dur={dur} from={1.08} to={1.14} filter={filter} />
+                <Photo photo={p} dur={dur} from={1.08} to={1.14} filter={filter} aspect={532 / 430} />
               </div>
             </div>
           );

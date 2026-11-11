@@ -53,7 +53,7 @@ const FloatCard: React.FC<{ photo: PhotoInfo; dur: number; w?: number; h?: numbe
           transform: `translateZ(${z}px) rotateX(${rx}deg) rotateY(${ry}deg)`,
         }}
       >
-        <Photo photo={photo} dur={dur} from={1.1} to={1.02} filter={filter} />
+        <Photo photo={photo} dur={dur} from={1.1} to={1.02} filter={filter} aspect={w / h} />
       </div>
     </AbsoluteFill>
   );
@@ -68,7 +68,7 @@ const Collage: React.FC<{ photos: PhotoInfo[]; dur: number }> = ({ photos, dur }
           const r = interpolate(f, [i * 8, i * 8 + 20], [0, 1], { ...clamp, easing: Easing.out(Easing.cubic) });
           return (
             <div key={i} style={{ position: "relative", borderRadius: 30, overflow: "hidden", opacity: r, transform: `scale(${0.85 + 0.15 * r})`, filter: `blur(${(1 - r) * 12}px)`, border: "4px solid rgba(255,255,255,0.8)" }}>
-              <Photo photo={p} dur={dur} from={1.12} to={1.04} />
+              <Photo photo={p} dur={dur} from={1.12} to={1.04} aspect={443 / 663} />
             </div>
           );
         })}
@@ -136,7 +136,7 @@ const Ending: React.FC<{ dur: number; photo: PhotoInfo }> = ({ dur, photo }) => 
     <Dreamy photo={photo} dur={dur}>
       <AbsoluteFill style={{ alignItems: "center", justifyContent: "center", opacity: out }}>
         <div style={{ position: "relative", width: w, height: h, borderRadius: r, overflow: "hidden" }}>
-          <Photo photo={photo} dur={dur} from={1.1} to={1.0} />
+          <Photo photo={photo} dur={dur} from={1.1} to={1.0} aspect={w / h} />
           <AbsoluteFill style={{ background: "linear-gradient(180deg, rgba(0,0,0,0) 50%, rgba(40,10,40,0.8) 100%)", opacity: text }} />
         </div>
         <div style={{ position: "absolute", bottom: 200, left: 0, right: 0, textAlign: "center", opacity: text, filter: `blur(${(1 - text) * 8}px)` }}>

@@ -6,7 +6,29 @@ export const FPS = 30;
 export const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
 
 // ---------- Project details (edit src/project.json) ----------
-export type PhotoInfo = { src: string; fx?: number; fy?: number };
+export type PhotoInfo = { src: string; fx?: number; fy?: number; w?: number; h?: number; box?: number[] };
+
+/**
+ * Where to crop a photo so the faces (box = [x0, y0, x1, y1] as fractions)
+ * stay in frame with headroom, for a frame of the given aspect (width / height).
+ */
+const cropFor = (photo: PhotoInfo, aspect: number) => {
+  if (!photo.box || !photo.w || !photo.h) return null;
+  const [x0, y0, x1, y1] = photo.box;
+  const ia = photo.w / photo.h;
+  const vw = ia > aspect ? aspect / ia : 1; // visible part of the image, as a fraction
+  const vh = ia > aspect ? 1 : ia / aspect;
+  const cx = (x0 + x1) / 2;
+  const cy = (y0 + y1) / 2;
+  let wy0 = y0 - 0.2 * vh; // faces start 20% down the frame
+  if (y1 > wy0 + vh * 0.8) wy0 = cy - vh / 2; // too tall: centre them instead
+  wy0 = Math.min(Math.max(wy0, 0), 1 - vh);
+  const wx0 = Math.min(Math.max(cx - vw / 2, 0), 1 - vw);
+  return {
+    pos: `${vw < 1 ? (wx0 / (1 - vw)) * 100 : 50}% ${vh < 1 ? (wy0 / (1 - vh)) * 100 : 50}%`,
+    origin: `${((cx - wx0) / vw) * 100}% ${((cy - wy0) / vh) * 100}%`,
+  };
+};
 export const HER: string = project.her;
 export const HIM: string = project.him;
 export const YEARS: number = project.years;
@@ -59,12 +81,15 @@ export const Photo: React.FC<{
   dy?: number;
   filter?: string;
   style?: React.CSSProperties;
-}> = ({ photo, dur, from = 1.04, to = 1.14, fx, fy, dx = 0, dy = 0, filter, style }) => {
+  /** frame width / height, so the crop keeps faces in view (default: full 9:16 frame) */
+  aspect?: number;
+}> = ({ photo, dur, from = 1.04, to = 1.14, fx, fy, dx = 0, dy = 0, filter, style, aspect = 1080 / 1920 }) => {
   const f = useCurrentFrame();
   const p = interpolate(f, [0, Math.max(1, dur)], [0, 1], clamp);
   const s = from + (to - from) * p;
   const x = fx ?? photo.fx ?? 50;
   const y = fy ?? photo.fy ?? 45;
+  const crop = fx === undefined && fy === undefined ? cropFor(photo, aspect) : null;
   return (
     <div style={{ position: "absolute", inset: 0, overflow: "hidden", ...style }}>
       <Img
@@ -73,9 +98,9 @@ export const Photo: React.FC<{
           width: "100%",
           height: "100%",
           objectFit: "cover",
-          objectPosition: `${x}% ${y}%`,
+          objectPosition: crop?.pos ?? `${x}% ${y}%`,
           transform: `translate(${dx * p}px, ${dy * p}px) scale(${s})`,
-          transformOrigin: `${x}% ${y}%`,
+          transformOrigin: crop?.origin ?? `${x}% ${y}%`,
           filter,
         }}
       />
