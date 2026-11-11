@@ -5,12 +5,17 @@ import { loadFont as loadOswald } from "@remotion/google-fonts/Oswald";
 import { loadFont as loadAllura } from "@remotion/google-fonts/Allura";
 import { loadFont as loadBungee } from "@remotion/google-fonts/Bungee";
 import timing from "../timing/t4.json";
-import { HER, HIM, Photo, YEARS, clamp, makeTiming, ordinal, photoAt, Grain, Vignette } from "../shared";
+import { HER, HIM, YEARS, clamp, makeTiming, ordinal, photoAt, Grain, Vignette } from "../shared";
+import { ArchWindow, BoothStrip, Diptych, FilmFrame, FullBleed, LightLeaks, ShotSpec, Shots } from "../shared/fx";
+import { Lyrics } from "../shared/lyrics";
+import { loadFont as loadCormorant } from "@remotion/google-fonts/CormorantGaramond";
+import lyrics from "../lyrics/t4.json";
 
 const { fontFamily: MARKER } = loadMarker("normal", { weights: ["400"], subsets: ["latin"] });
 const { fontFamily: OSWALD } = loadOswald("normal", { weights: ["500"], subsets: ["latin"] });
 const { fontFamily: SCRIPT } = loadAllura("normal", { weights: ["400"], subsets: ["latin"] });
 const { fontFamily: NEON } = loadBungee("normal", { weights: ["400"], subsets: ["latin"] });
+const { fontFamily: SERIF } = loadCormorant("italic", { weights: ["500"], subsets: ["latin"] });
 
 const T = makeTiming(timing);
 export const T4_DURATION = T.total;
@@ -177,12 +182,11 @@ const IntroDeck: React.FC<{ dur: number }> = ({ dur }) => {
   const spin = f < spinStart ? 0 : (f - spinStart) * 9;
   const pressAt = T.beat(6);
   const press = interpolate(f, [pressAt, pressAt + 3, pressAt + 10], [0, 1, 0.6], clamp);
-  const zoom = interpolate(f, [dur - 18, dur], [1, 2.4], { ...clamp, easing: Easing.in(Easing.cubic) });
-  const black = interpolate(f, [dur - 8, dur], [0, 1], clamp);
+  const zoom = interpolate(f, [dur - 20, dur + 10], [1, 2.2], { ...clamp, easing: Easing.in(Easing.cubic) });
+  const blur = interpolate(f, [dur - 14, dur + 10], [0, 20], clamp);
   return (
-    <AbsoluteFill>
+    <AbsoluteFill style={{ filter: blur > 0.3 ? `blur(${blur}px)` : undefined }}>
       <Deck drop={(1 - seat) * -1100} spin={spin} neon="PLAY" neonOn={flicker(f, T.beat(7))} press={press} zoom={zoom} />
-      <AbsoluteFill style={{ background: "#000", opacity: black }} />
     </AbsoluteFill>
   );
 };
@@ -199,57 +203,36 @@ const OutroDeck: React.FC<{ dur: number }> = ({ dur }) => {
   );
 };
 
-// ---------- Fast photo flip-through ----------
-const Flip: React.FC<{ index: number; dur: number }> = ({ index, dur }) => {
-  const f = useCurrentFrame();
-  const settle = interpolate(f, [0, 6], [1, 0], { ...clamp, easing: Easing.out(Easing.cubic) });
-  const portrait = index % 3 === 2;
-  const rot = (index % 2 ? 1.6 : -1.4) + settle * (index % 2 ? 3 : -3);
-  const w = portrait ? 780 : 1000;
-  const h = portrait ? 1040 : 760;
-  return (
-    <div
-      style={{
-        position: "absolute",
-        left: (1080 - w) / 2,
-        top: 470 + (portrait ? -60 : 80),
-        width: w,
-        height: h,
-        padding: index % 2 ? 14 : 0,
-        background: "#f4efe6",
-        transform: `rotate(${rot}deg) scale(${1 + settle * 0.05})`,
-        boxShadow: "0 20px 50px rgba(0,0,0,0.6)",
-      }}
-    >
-      <div style={{ position: "relative", width: "100%", height: "100%", overflow: "hidden" }}>
-        <Photo photo={photoAt(index)} dur={dur} from={1.05} to={1.1} filter="saturate(1.12) contrast(1.04)" />
-      </div>
-    </div>
-  );
-};
-
+// ---------- Photo section: calm shots joined by light leaks ----------
 const PhotoReel: React.FC<{ startBeat: number; endBeat: number }> = ({ startBeat, endBeat }) => {
   const f = useCurrentFrame();
   const start = T.beat(startBeat);
   const dur = T.beat(endBeat) - start;
-  const title = interpolate(f, [0, 12], [0, 1], clamp);
-  const out = interpolate(f, [dur - 8, dur], [1, 0], clamp);
-  const slots = [];
-  for (let b = startBeat, i = 0; b < endBeat; b += 2, i++) {
-    const s = T.beat(b) - start;
-    const e = Math.min(T.beat(b + 2), T.beat(endBeat)) - start;
-    slots.push(
-      <Sequence key={i} from={s} durationInFrames={e - s} layout="none">
-        <Flip index={i} dur={e - s} />
-      </Sequence>,
-    );
-  }
+  const at = (beat: number) => T.beat(beat) - start;
+  const title = interpolate(f, [6, 24], [0, 1], clamp);
+  const out = interpolate(f, [dur - 10, dur], [1, 0], clamp);
+  const warm = "sepia(0.25) saturate(1.05) contrast(1.03)";
+  const shots: ShotSpec[] = [
+    { from: 0, to: at(startBeat + 4), enter: "zoom", exit: "blur", render: (d) => <FilmFrame photo={photoAt(0)} dur={d} num={1} filter="sepia(0.55) contrast(1.05)" /> },
+    { from: at(startBeat + 4), to: at(startBeat + 8), enter: "wipe", exit: "blur", render: (d) => <FullBleed photo={photoAt(1)} dur={d} filter={warm} /> },
+    { from: at(startBeat + 8), to: at(startBeat + 12), enter: "blur", exit: "zoom", render: (d) => <BoothStrip photos={[photoAt(2), photoAt(3), photoAt(4)]} dur={d} font={SCRIPT} label="us, always" filter={warm} /> },
+    { from: at(startBeat + 12), to: at(startBeat + 16), enter: "iris", exit: "blur", render: (d) => <Diptych a={photoAt(5)} b={photoAt(6)} dur={d} bg="#120d09" filter={warm} /> },
+    { from: at(startBeat + 16), to: at(startBeat + 20), enter: "blur", exit: "blur", render: (d) => (
+      <AbsoluteFill style={{ background: "radial-gradient(ellipse at 50% 40%, #3a2414 0%, #120b06 100%)" }}>
+        <ArchWindow photo={photoAt(9)} dur={d} left={150} top={430} w={780} h={1080} border="#e9cf9a" filter={warm} />
+      </AbsoluteFill>
+    ) },
+    { from: at(startBeat + 20), to: dur, enter: "wipe", render: (d) => <FullBleed photo={photoAt(11)} dur={d} filter={warm} /> },
+  ];
+  const cuts = shots.map((s) => s.from);
   return (
-    <AbsoluteFill style={{ background: "#050505", opacity: out }}>
-      <div style={{ position: "absolute", top: 230, left: 0, right: 0, textAlign: "center", fontFamily: SCRIPT, fontSize: 120, color: "#f6f1e8", opacity: title }}>
+    <AbsoluteFill style={{ background: "#0b0805", opacity: out }}>
+      <Shots shots={shots} overlap={12} inLen={16} />
+      <AbsoluteFill style={{ background: "linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0) 16%)" }} />
+      <div style={{ position: "absolute", top: 70, left: 0, right: 0, textAlign: "center", fontFamily: SCRIPT, fontSize: 110, color: "#fbf3e6", opacity: title, textShadow: "0 4px 24px rgba(0,0,0,0.7)" }}>
         {ANNIV}
       </div>
-      {slots}
+      <LightLeaks cuts={cuts} palette="warm" />
       <Grain opacity={0.1} />
     </AbsoluteFill>
   );
@@ -257,7 +240,7 @@ const PhotoReel: React.FC<{ startBeat: number; endBeat: number }> = ({ startBeat
 
 // ---------- Running order (in beats; the song is ~108 BPM) ----------
 const PHOTOS_FROM = 10;
-const PHOTOS_TO = 32;
+const PHOTOS_TO = 34;
 
 export const Template4: React.FC = () => {
   const introEnd = T.beat(PHOTOS_FROM);
@@ -265,7 +248,7 @@ export const Template4: React.FC = () => {
   return (
     <AbsoluteFill style={{ background: "#000" }}>
       <Audio src={staticFile("audio/t4.mp3")} />
-      <Sequence durationInFrames={introEnd}>
+      <Sequence durationInFrames={introEnd + 12}>
         <IntroDeck dur={introEnd} />
       </Sequence>
       <Sequence from={introEnd} durationInFrames={outroStart - introEnd}>
@@ -274,6 +257,8 @@ export const Template4: React.FC = () => {
       <Sequence from={outroStart} durationInFrames={T.total - outroStart}>
         <OutroDeck dur={T.total - outroStart} />
       </Sequence>
+      <LightLeaks cuts={[introEnd, outroStart]} palette="gold" ambient={0} />
+      <Lyrics data={lyrics} font={SERIF} italic size={70} bottom={230} />
     </AbsoluteFill>
   );
 };

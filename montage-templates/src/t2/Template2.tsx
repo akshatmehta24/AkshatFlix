@@ -1,10 +1,13 @@
 import React from "react";
-import { AbsoluteFill, Audio, Easing, Sequence, interpolate, random, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
+import { AbsoluteFill, Audio, Easing, Sequence, interpolate, random, staticFile, useCurrentFrame } from "remotion";
 import { loadFont as loadKaushan } from "@remotion/google-fonts/KaushanScript";
 import { loadFont as loadCaveat } from "@remotion/google-fonts/Caveat";
 import { loadFont as loadHomemade } from "@remotion/google-fonts/HomemadeApple";
 import timing from "../timing/t2.json";
-import { DATE_DOTS, END_YEAR, HER, HIM, Photo, PhotoInfo, START_YEAR, YEARS, clamp, makeTiming, ordinal, photoAt, Grain, Vignette } from "../shared";
+import { DATE_DOTS, END_YEAR, HER, HIM, START_YEAR, YEARS, clamp, makeTiming, ordinal, photoAt, Grain, Vignette } from "../shared";
+import { ArchWindow, BlurFill, Diptych, Enter, FullBleed, LightLeaks, ShotSpec, Shots, TapedPolaroid, TornPaper } from "../shared/fx";
+import { Lyrics } from "../shared/lyrics";
+import lyrics from "../lyrics/t2.json";
 
 const { fontFamily: BRUSH } = loadKaushan("normal", { weights: ["400"], subsets: ["latin"] });
 const { fontFamily: HAND } = loadCaveat("normal", { weights: ["500"], subsets: ["latin"] });
@@ -78,102 +81,6 @@ const Paper: React.FC = () => {
       </AbsoluteFill>
       <Grain opacity={0.2} />
       <Vignette strength={0.7} />
-    </AbsoluteFill>
-  );
-};
-
-// ---------- A printed photo with a white border ----------
-const OLD = "sepia(0.6) saturate(0.85) contrast(1.05) brightness(0.96)";
-const NEW = "saturate(1.08) contrast(1.03)";
-
-const Print: React.FC<{
-  photo: PhotoInfo;
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-  rot: number;
-  dur: number;
-  filter: string;
-  delay?: number;
-}> = ({ photo, x, y, w, h, rot, dur, filter, delay = 0 }) => {
-  const f = useCurrentFrame();
-  const { fps } = useVideoConfig();
-  const pop = delay ? spring({ frame: f - delay, fps, config: { damping: 15, mass: 0.8 } }) : 1;
-  return (
-    <div
-      style={{
-        position: "absolute",
-        left: x,
-        top: y,
-        width: w,
-        height: h,
-        padding: 18,
-        background: "#f7f1e6",
-        boxShadow: "0 25px 50px rgba(0,0,0,0.55), 0 4px 10px rgba(0,0,0,0.35)",
-        transform: `rotate(${rot}deg) scale(${pop}) translateY(${(1 - pop) * 120}px)`,
-        opacity: pop > 0.02 ? 1 : 0,
-      }}
-    >
-      <div style={{ position: "relative", width: "100%", height: "100%", overflow: "hidden" }}>
-        <Photo photo={photo} dur={dur} from={1.06} to={1.14} filter={filter} />
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            background: "radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0) 55%, rgba(60,30,10,0.35) 100%)",
-          }}
-        />
-      </div>
-    </div>
-  );
-};
-
-type Layout = { x: number; y: number; w: number; h: number; rot: number; inset?: boolean }[];
-const LAYOUTS: Layout[] = [
-  [{ x: 70, y: 520, w: 940, h: 720, rot: -3 }],
-  [
-    { x: 150, y: 330, w: 780, h: 1020, rot: 2 },
-    { x: 520, y: 1160, w: 470, h: 360, rot: -6, inset: true },
-  ],
-  [
-    { x: 50, y: 260, w: 820, h: 620, rot: -5 },
-    { x: 210, y: 960, w: 820, h: 620, rot: 4, inset: true },
-  ],
-  [
-    { x: 60, y: 480, w: 960, h: 730, rot: 1.5 },
-    { x: 640, y: 1100, w: 370, h: 480, rot: 7, inset: true },
-  ],
-  [{ x: 110, y: 300, w: 860, h: 1180, rot: -2 }],
-];
-
-// Direction each slide pans in from: like a camera moving across a table.
-const DIRS = [
-  [1, 0],
-  [0, 1],
-  [-1, 0],
-  [0, -1],
-];
-
-const Slide: React.FC<{ layout: Layout; first: number; dur: number; filter: string; dir: number[]; insetDelay: number }> = ({
-  layout,
-  first,
-  dur,
-  filter,
-  dir,
-  insetDelay,
-}) => {
-  const f = useCurrentFrame();
-  const enter = interpolate(f, [0, 16], [1, 0], { ...clamp, easing: Easing.out(Easing.cubic) });
-  const exit = interpolate(f, [dur - 12, dur], [0, 1], { ...clamp, easing: Easing.in(Easing.cubic) });
-  const dx = (enter * dir[0] - exit * dir[0]) * 1250;
-  const dy = (enter * dir[1] - exit * dir[1]) * 2100;
-  const zoom = interpolate(f, [0, dur], [1.0, 1.05]);
-  return (
-    <AbsoluteFill style={{ transform: `translate(${dx}px, ${dy}px) scale(${zoom})` }}>
-      {layout.map((p, i) => (
-        <Print key={i} photo={photoAt(first + i)} {...p} dur={dur} filter={filter} delay={p.inset ? insetDelay : 0} />
-      ))}
     </AbsoluteFill>
   );
 };
@@ -261,58 +168,64 @@ const Finale: React.FC<{ dur: number }> = ({ dur }) => {
   );
 };
 
-// ---------- Running order (in beats; the song is ~112 BPM) ----------
-const OLD_SLIDES = 8;
-const NEW_SLIDES = 4;
-const SLIDE_BEATS = 6;
+// ---------- Running order (in beats; the song is ~112 BPM, 8 beats ≈ 4.3 s) ----------
+const OLD = "sepia(0.55) saturate(0.85) contrast(1.05)";
+const SOFT = "sepia(0.15) saturate(1.05)";
+const cream = "radial-gradient(ellipse at 50% 40%, #f5ecdc 0%, #e6d6bb 70%, #cdb894 100%)";
+
+const SHOTS: { beats: [number, number]; enter: Enter; render: (d: number) => React.ReactNode }[] = [
+  { beats: [8, 16], enter: "rise", render: (d) => <TornPaper photo={photoAt(0)} dur={d} left={110} top={330} w={860} h={1180} rot={-2} filter={OLD} seed={1} /> },
+  { beats: [16, 24], enter: "blur", render: (d) => <TapedPolaroid photo={photoAt(1)} dur={d} left={150} top={340} w={780} rot={-3} label="the early days" font={HAND} filter={OLD} /> },
+  { beats: [24, 32], enter: "wipe", render: (d) => <BlurFill photo={photoAt(2)} dur={d} box={{ left: 90, top: 400, width: 900, height: 990 }} radius={6} filter={OLD} /> },
+  { beats: [32, 40], enter: "iris", render: (d) => <Diptych a={photoAt(3)} b={photoAt(4)} dur={d} stacked bg="#efe5d2" filter={SOFT} /> },
+  { beats: [40, 48], enter: "blur", render: (d) => (
+    <AbsoluteFill style={{ background: cream }}>
+      <TapedPolaroid photo={photoAt(5)} dur={d} left={70} top={220} w={600} rot={-6} filter={SOFT} />
+      <TapedPolaroid photo={photoAt(6)} dur={d} left={420} top={860} w={600} rot={5} label="always us" font={HAND} filter={SOFT} />
+    </AbsoluteFill>
+  ) },
+  { beats: [58, 66], enter: "blur", render: (d) => <BlurFill photo={photoAt(13)} dur={d} box={{ left: 70, top: 560, width: 940, height: 640 }} filter={SOFT} /> },
+  { beats: [66, 74], enter: "iris", render: (d) => (
+    <AbsoluteFill style={{ background: cream }}>
+      <ArchWindow photo={photoAt(15)} dur={d} left={160} top={300} w={760} h={1180} border="#b8925a" filter={SOFT} />
+    </AbsoluteFill>
+  ) },
+  { beats: [74, 82], enter: "rise", render: (d) => <TornPaper photo={photoAt(17)} dur={d} left={100} top={300} w={880} h={1220} rot={2} filter={SOFT} seed={4} /> },
+  { beats: [82, 90], enter: "wipe", render: (d) => <FullBleed photo={photoAt(19)} dur={d} filter={SOFT} line="rgba(255,240,215,0.6)" /> },
+];
+const QUOTE_BEATS: [number, number] = [48, 58];
 const TITLE_END = 8;
-const OLD_END = TITLE_END + OLD_SLIDES * SLIDE_BEATS; // 56
-const QUOTE_END = OLD_END + 12; // 68
-const NEW_END = QUOTE_END + NEW_SLIDES * SLIDE_BEATS; // 92
-const OVERLAP = 12;
+const FINALE_BEAT = 90;
 
 export const Template2: React.FC = () => {
-  let photoIndex = 0;
-  const slides: React.ReactNode[] = [];
-  const addSlides = (count: number, startBeat: number, filter: string, layoutOffset: number) => {
-    for (let k = 0; k < count; k++) {
-      const s = T.beat(startBeat + k * SLIDE_BEATS);
-      const e = T.beat(startBeat + (k + 1) * SLIDE_BEATS) + OVERLAP;
-      const layout = LAYOUTS[(k + layoutOffset) % LAYOUTS.length];
-      const first = photoIndex;
-      photoIndex += layout.length;
-      slides.push(
-        <Sequence key={`${startBeat}-${k}`} from={s} durationInFrames={e - s}>
-          <Slide
-            layout={layout}
-            first={first}
-            dur={e - s}
-            filter={filter}
-            dir={DIRS[(k + layoutOffset) % DIRS.length]}
-            insetDelay={T.beat(startBeat + k * SLIDE_BEATS + 2) - s}
-          />
-        </Sequence>,
-      );
-    }
-  };
-  addSlides(OLD_SLIDES, TITLE_END, OLD, 0);
-  addSlides(NEW_SLIDES, QUOTE_END, NEW, 1);
-
-  // Floating dust in front of everything.
+  const shots: ShotSpec[] = SHOTS.map((sh) => ({
+    from: T.beat(sh.beats[0]),
+    to: T.beat(sh.beats[1]),
+    enter: sh.enter,
+    exit: "blur",
+    render: sh.render,
+  }));
+  const quoteFrom = T.beat(QUOTE_BEATS[0]) + 8;
+  const quoteDur = T.beat(QUOTE_BEATS[1]) - quoteFrom;
+  const finaleFrom = T.beat(FINALE_BEAT) + 6;
+  const cuts = [...shots.map((s) => s.from), quoteFrom, finaleFrom];
   return (
     <AbsoluteFill style={{ background: "#000" }}>
       <Audio src={staticFile("audio/t2.mp3")} />
       <Paper />
-      <Sequence durationInFrames={T.beat(TITLE_END) + OVERLAP}>
-        <Title dur={T.beat(TITLE_END) + OVERLAP} />
+      <Sequence durationInFrames={T.beat(TITLE_END) + 14}>
+        <Title dur={T.beat(TITLE_END) + 14} />
       </Sequence>
-      {slides}
-      <Sequence from={T.beat(OLD_END) + 6} durationInFrames={T.beat(QUOTE_END) - T.beat(OLD_END)}>
-        <Quote dur={T.beat(QUOTE_END) - T.beat(OLD_END)} />
+      <Shots shots={shots.slice(0, 5)} overlap={16} inLen={20} />
+      <Sequence from={quoteFrom} durationInFrames={quoteDur}>
+        <Quote dur={quoteDur} />
       </Sequence>
-      <Sequence from={T.beat(NEW_END) + 4} durationInFrames={T.total - T.beat(NEW_END) - 4}>
-        <Finale dur={T.total - T.beat(NEW_END) - 4} />
+      <Shots shots={shots.slice(5)} overlap={16} inLen={20} />
+      <Sequence from={finaleFrom} durationInFrames={T.total - finaleFrom}>
+        <Finale dur={T.total - finaleFrom} />
       </Sequence>
+      <LightLeaks cuts={cuts} palette="warm" ambient={0.14} />
+      <Lyrics data={lyrics} font={HAND} size={78} bottom={200} />
       <Dust />
     </AbsoluteFill>
   );
