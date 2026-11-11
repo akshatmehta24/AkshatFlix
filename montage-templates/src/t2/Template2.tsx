@@ -4,7 +4,7 @@ import { loadFont as loadKaushan } from "@remotion/google-fonts/KaushanScript";
 import { loadFont as loadCaveat } from "@remotion/google-fonts/Caveat";
 import { loadFont as loadHomemade } from "@remotion/google-fonts/HomemadeApple";
 import timing from "../timing/t2.json";
-import { DATE_DOTS, END_YEAR, HER, HIM, START_YEAR, YEARS, clamp, makeTiming, ordinal, photoAt, Grain, Vignette } from "../shared";
+import { DATE_DOTS, END_YEAR, FIRST, SECOND, START_YEAR, YEARS, clamp, makeTiming, ordinal, photoAt, Grain, Vignette } from "../shared";
 import { ArchWindow, BlurFill, Diptych, Enter, FullBleed, LightLeaks, ShotSpec, Shots, TapedPolaroid, TornPaper } from "../shared/fx";
 import { Lyrics } from "../shared/lyrics";
 import lyrics from "../lyrics/t2.json";
@@ -101,7 +101,7 @@ const Title: React.FC<{ dur: number }> = ({ dur }) => {
     <AbsoluteFill style={{ alignItems: "center", justifyContent: "center", opacity: out }}>
       <div style={{ ...style, fontSize: 92, clipPath: `inset(0 ${w1}% 0 0)` }}>Happy {ordinal(YEARS)} Anniversary</div>
       <div style={{ ...style, fontSize: 128, marginTop: 10, whiteSpace: "nowrap", clipPath: `inset(0 ${w2}% 0 0)` }}>
-        {HER} &amp; {HIM}
+        {FIRST} &amp; {SECOND}
       </div>
     </AbsoluteFill>
   );
@@ -157,7 +157,7 @@ const Finale: React.FC<{ dur: number }> = ({ dur }) => {
           Happy {ordinal(YEARS)} Anniversary
         </div>
         <div style={{ fontFamily: BRUSH, fontSize: 128, whiteSpace: "nowrap", color: "#fffaf0", opacity: a, textShadow: "0 4px 18px rgba(0,0,0,0.6)" }}>
-          {HER} &amp; {HIM}
+          {FIRST} &amp; {SECOND}
         </div>
         <div style={{ fontFamily: HAND, fontSize: 66, color: "#f3dfc0", opacity: b, marginTop: 30 }}>
           {DATE_DOTS(START_YEAR)} — {DATE_DOTS(END_YEAR)}

@@ -10,6 +10,10 @@ export type PhotoInfo = { src: string; fx?: number; fy?: number };
 export const HER: string = project.her;
 export const HIM: string = project.him;
 export const YEARS: number = project.years;
+/** Names in the order they appear on screen ("Naveen & Neeru"). */
+const himFirst = (project as { nameOrder?: string }).nameOrder === "him-first";
+export const FIRST: string = himFirst ? HIM : HER;
+export const SECOND: string = himFirst ? HER : HIM;
 const wedding = new Date(project.weddingDate + "T00:00:00");
 export const START_YEAR = wedding.getFullYear();
 export const END_YEAR = START_YEAR + YEARS;

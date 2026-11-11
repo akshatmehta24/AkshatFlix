@@ -5,7 +5,7 @@ import { loadFont as loadMontserrat } from "@remotion/google-fonts/Montserrat";
 import { loadFont as loadCormorant } from "@remotion/google-fonts/CormorantGaramond";
 import timing from "../timing/t3.json";
 import lyrics from "../lyrics/t3.json";
-import { DATE_DOTS, END_YEAR, HER, HIM, Photo, PhotoInfo, START_YEAR, YEARS, clamp, makeTiming, photoAt } from "../shared";
+import { DATE_DOTS, END_YEAR, FIRST, SECOND, Photo, PhotoInfo, START_YEAR, YEARS, clamp, makeTiming, photoAt } from "../shared";
 import { ArchWindow, Diptych, DoubleExposure, Enter, LightLeaks, ShotSpec, Shots } from "../shared/fx";
 import { Lyrics } from "../shared/lyrics";
 
@@ -141,7 +141,7 @@ const Ending: React.FC<{ dur: number; photo: PhotoInfo }> = ({ dur, photo }) => 
         </div>
         <div style={{ position: "absolute", bottom: 200, left: 0, right: 0, textAlign: "center", opacity: text, filter: `blur(${(1 - text) * 8}px)` }}>
           <div style={{ fontFamily: SCRIPT, fontSize: 124, whiteSpace: "nowrap", color: "#fff", textShadow: "0 6px 30px rgba(0,0,0,0.6)" }}>
-            {HER} &amp; {HIM}
+            {FIRST} &amp; {SECOND}
           </div>
           <div style={{ fontFamily: SERIF, fontSize: 56, color: "#ffd9ea", letterSpacing: 3 }}>
             {DATE_DOTS(START_YEAR)} — {DATE_DOTS(END_YEAR)}

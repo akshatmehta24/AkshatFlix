@@ -5,7 +5,7 @@ import { loadFont as loadOswald } from "@remotion/google-fonts/Oswald";
 import { loadFont as loadAllura } from "@remotion/google-fonts/Allura";
 import { loadFont as loadBungee } from "@remotion/google-fonts/Bungee";
 import timing from "../timing/t4.json";
-import { HER, HIM, YEARS, clamp, makeTiming, ordinal, photoAt, Grain, Vignette } from "../shared";
+import { FIRST, SECOND, YEARS, clamp, makeTiming, ordinal, photoAt, Grain, Vignette } from "../shared";
 import { ArchWindow, BoothStrip, Diptych, FilmFrame, FullBleed, LightLeaks, ShotSpec, Shots } from "../shared/fx";
 import { Lyrics } from "../shared/lyrics";
 import { loadFont as loadCormorant } from "@remotion/google-fonts/CormorantGaramond";
@@ -49,7 +49,7 @@ const Cassette: React.FC<{ spin: number }> = ({ spin }) => (
     <rect x="44" y="40" width="752" height="22" rx="10" fill="#c8452f" />
     <rect x="44" y="62" width="752" height="10" fill="#e89a3c" />
     <text x="420" y="150" textAnchor="middle" fontFamily={MARKER} fontSize="64" fill="#1f1a17">
-      {HER} ♥ {HIM}
+      {FIRST} ♥ {SECOND}
     </text>
     <rect x="240" y="180" width="360" height="120" rx="58" fill="#15110f" stroke="#6a625a" strokeWidth="4" />
     <Reel cx={315} cy={240} angle={spin} tape={52} />

@@ -1,6 +1,6 @@
 {
-  "her": "Sonia",
-  "him": "Sandeep",
+  "her": "Neeru",
+  "him": "Naveen",
   "weddingDate": "2001-11-30",
   "years": 25,
   "photos": [
@@ -104,5 +104,6 @@
       "fx": 45,
       "fy": 46
     }
-  ]
+  ],
+  "nameOrder": "him-first"
 }
