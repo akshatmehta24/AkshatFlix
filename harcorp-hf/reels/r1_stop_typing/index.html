@@ -24,7 +24,7 @@ html, body { width:1080px; height:1920px; overflow:hidden; background:var(--bg);
 #flash { background:#fff; opacity:0; z-index:65; }
 .hudt { position:absolute; top:150px; font: 400 18px Dep, monospace; letter-spacing:.26em; color: var(--dim); }
 .scene { overflow:hidden; clip-path: inset(0 0 770px 0); }
-#flash { clip-path: inset(0 0 770px 0); }
+#flash { -webkit-mask-image: linear-gradient(180deg, #000 0px, #000 900px, transparent 1140px); mask-image: linear-gradient(180deg, #000 0px, #000 900px, transparent 1140px); }
 /* slam */
 .sw { position:absolute; left:0; right:0; text-align:center; font-weight:700; letter-spacing:-.045em; line-height:1; color: var(--ink); opacity:0; text-shadow: 0 12px 60px rgba(0,0,0,.9); }
 .sw.acc { color: var(--mint); text-shadow: 0 0 40px rgba(93,242,198,.45); }
