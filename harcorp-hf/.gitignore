@@ -6,3 +6,5 @@ film/.hyperframes/
 film/assets/audio/mix_raw.wav
 film/snap_sheet.png
 qa/
+work-*/
+.*.hf-transaction-*/
