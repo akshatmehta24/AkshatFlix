@@ -25,7 +25,7 @@
     pix.forEach((el, i) => {
       const cx = i % 12;
       const cy = Math.floor(i / 12);
-      const d = Math.hypot(cx - 5.5, cy - 10.5) / 13 + hash(i) * 0.1;
+      const d = Math.hypot(cx - 5.5, cy - 6.5) / 9 + hash(i) * 0.1;
       tl.set(el, {backgroundColor: hash(i + 3) > 0.75 ? '#E4ECE7' : '#5DF2C6'}, Math.max(0, at - 0.4));
       tl.to(el, {opacity: 1, scale: 1, duration: 0.12, ease: 'power2.out'}, at - 0.26 + d * 0.2);
       tl.to(el, {opacity: 0, scale: 0.2, duration: 0.14, ease: 'power2.in'}, at + 0.03 + d * 0.2);

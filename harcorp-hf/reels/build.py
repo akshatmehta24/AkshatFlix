@@ -163,7 +163,7 @@ def build(d):
     if T['timer']:
         tend = T['shots'][-1]['start']
         timer = '<div id="timer" class="clip" data-start="0" data-duration="%.3f"><div class="tlab">TIME TO SHIP</div><div class="tdig" id="tdig">00:00.00</div><div class="tsplit" id="tsplit"></div></div>' % tend
-    pix = ''.join(f'<div class="px" style="left:{(q % 12) * 90}px;top:{(q // 12) * 90}px"></div>' for q in range(12 * 22))
+    pix = ''.join(f'<div class="px" style="left:{(q % 12) * 90}px;top:{(q // 12) * 90}px"></div>' for q in range(12 * 13))
     html = open('template.html').read()
     html = html.replace('%TOTAL%', f'{T["total"]:.3f}').replace('%SCENES%', scenes).replace('%CAPS%', captions(T)).replace('%TIMER%', timer).replace('%PIX%', pix).replace('%TITLE%', T['title'])
     open(f'{d}/index.html', 'w').write(html)
