@@ -8,3 +8,9 @@ film/snap_sheet.png
 qa/
 work-*/
 .*.hf-transaction-*/
+reels/*/snap/
+reels/*/sheet.png
+reels/*/assets/audio/mix_raw.wav
+reels/out/
+reels/*/.hyperframes/
+reels/*/node_modules/
