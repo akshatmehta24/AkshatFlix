@@ -1,0 +1,17 @@
+{
+  "name": "harcorp-video",
+  "private": true,
+  "type": "module",
+  "scripts": {},
+  "dependencies": {
+    "@fontsource/jetbrains-mono": "^5.3.0",
+    "@proj-airi/font-departure-mono": "^0.17.0",
+    "@remotion/cli": "^4.0.545",
+    "@remotion/renderer": "^4.0.545",
+    "@types/react": "^18.3.12",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "remotion": "^4.0.545",
+    "typescript": "^5.6.3"
+  }
+}
