@@ -1,0 +1,7 @@
+node_modules/
+film/node_modules/
+film/snap/
+film/.hyperframes/
+*.mp4
+film/assets/audio/mix_raw.wav
+film/snap_sheet.png

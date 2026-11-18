@@ -1,0 +1,14 @@
+{
+  "name": "film",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npx --yes hyperframes@0.9.67 preview",
+    "check": "npx --yes hyperframes@0.9.67 check",
+    "render": "npx --yes hyperframes@0.9.67 render",
+    "publish": "npx --yes hyperframes@0.9.67 publish"
+  },
+  "dependencies": {
+    "gsap": "^3.12.5"
+  }
+}
